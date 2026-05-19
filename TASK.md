@@ -2,33 +2,27 @@
 
 ## Task
 
-Build milestone 6: Life Score.
+Build milestone 7: Weather Translator.
 
 ## Goal
 
-Add an outdoor comfort score that translates raw weather data into a meaningful 0-100 "Life Score."
+Add human-friendly weather advice that translates raw weather conditions into practical real-life guidance.
 
 ## Requirements
 
-- Create a reusable LifeScoreCard component.
-- Create a weatherScore utility.
+- Create a weatherText/advice utility or extend the existing weatherText utility.
+- Create a WeatherAdviceCard component if useful.
 - Use current weather data from the selected location.
-- Calculate a 0-100 score.
-- Score should consider:
-  - apparent temperature
-  - humidity
-  - wind speed
-  - precipitation
-  - weather condition if useful
-- Show a label:
-  - 90-100: Perfect outside
-  - 75-89: Great
-  - 55-74: Okay
-  - 35-54: Uncomfortable
-  - 0-34: Avoid long exposure
-- Show a short explanation of why the score was given.
-- Add the card to the weather panel.
-- Keep existing search, weather, globe, marker, and day/night features working.
+- Generate short advice for:
+  - clothing
+  - commute
+  - outdoor activity
+  - health/comfort
+- Advice should be specific, not generic.
+- Use temperature, apparent temperature, humidity, wind, precipitation, weather code, and day/night if useful.
+- Add the advice to the weather panel.
+- Keep the Life Score card working.
+- Keep search, weather fetching, globe, marker, and day/night features working.
 - Do not add Activity Planner yet.
 - Do not add Timeline Story yet.
 - Do not add Air Quality yet.
@@ -37,8 +31,8 @@ Add an outdoor comfort score that translates raw weather data into a meaningful 
 
 ## Files likely to edit
 
-- src/components/LifeScoreCard.tsx
-- src/lib/weatherScore.ts
+- src/lib/weatherText.ts
+- src/components/WeatherAdviceCard.tsx
 - src/components/WeatherPanel.tsx
 - src/types/weather.ts if needed
 
@@ -46,7 +40,7 @@ Add an outdoor comfort score that translates raw weather data into a meaningful 
 
 - npm run dev works
 - npm run build works
-- Selecting a city shows a Life Score in the weather panel
-- Score changes based on weather conditions
-- Explanation text appears
-- Existing globe and weather behavior still works
+- Selecting a city shows practical weather advice
+- Advice updates when selecting a new city
+- Advice includes clothing, commute, outdoor, and comfort/health guidance
+- Existing Life Score and weather panel still work
