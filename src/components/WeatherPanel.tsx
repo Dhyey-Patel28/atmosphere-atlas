@@ -1,4 +1,4 @@
-import type { Location, WeatherData } from '../types/weather';
+import type { Location, WeatherData, AirQualityData } from '../types/weather';
 import { getWeatherDescription, getWeatherAdvice } from '../lib/weatherText';
 import { calculateLifeScore } from '../lib/weatherScore';
 import { generateTimeline } from '../lib/timelineStory';
@@ -6,15 +6,27 @@ import { LifeScoreCard } from './LifeScoreCard';
 import { WeatherAdviceCard } from './WeatherAdviceCard';
 import { TimelineStory } from './TimelineStory';
 import { ActivityPlanner } from './ActivityPlanner';
+import { AirQualityCard } from './AirQualityCard';
 
 interface WeatherPanelProps {
   location: Location | null;
   weather: WeatherData | null;
   isLoading: boolean;
   error: string | null;
+  airQuality: AirQualityData | null;
+  isAqLoading: boolean;
+  aqError: string | null;
 }
 
-export function WeatherPanel({ location, weather, isLoading, error }: WeatherPanelProps) {
+export function WeatherPanel({ 
+  location, 
+  weather, 
+  isLoading, 
+  error, 
+  airQuality, 
+  isAqLoading, 
+  aqError 
+}: WeatherPanelProps) {
   // Empty State Placeholder
   if (!location && !isLoading && !error) {
     return (
@@ -127,6 +139,9 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
 
             {/* Activity Planner */}
             <ActivityPlanner weather={weather} />
+
+            {/* Air Quality Card */}
+            <AirQualityCard airQuality={airQuality} isLoading={isAqLoading} error={aqError} />
           </>
         )}
       </div>

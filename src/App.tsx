@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { WeatherPanel } from './components/WeatherPanel';
 import { GlobeView } from './components/GlobeView';
-import { fetchWeather } from './lib/openMeteo';
-import type { Location, WeatherData } from './types/weather';
+import { fetchWeather, fetchAirQuality } from './lib/openMeteo';
+import type { Location, WeatherData, AirQualityData } from './types/weather';
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -11,15 +11,24 @@ function App() {
   const [isWeatherLoading, setIsWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
 
+  const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
+  const [isAqLoading, setIsAqLoading] = useState(false);
+  const [aqError, setAqError] = useState<string | null>(null);
   useEffect(() => {
+    if (!selectedLocation) {
+      setWeather(null);
+      setAirQuality(null);
+      return;
+    }
+
+    const loc = selectedLocation;
+    
     async function loadWeather() {
-      if (!selectedLocation) return;
-      
       setIsWeatherLoading(true);
       setWeatherError(null);
       
       try {
-        const data = await fetchWeather(selectedLocation.latitude, selectedLocation.longitude);
+        const data = await fetchWeather(loc.latitude, loc.longitude);
         setWeather(data);
       } catch (err) {
         setWeatherError('Failed to retrieve weather data.');
@@ -28,7 +37,22 @@ function App() {
       }
     }
 
+    async function loadAirQuality() {
+      setIsAqLoading(true);
+      setAqError(null);
+      
+      try {
+        const data = await fetchAirQuality(loc.latitude, loc.longitude);
+        setAirQuality(data);
+      } catch (err) {
+        setAqError('Failed to retrieve air quality data.');
+      } finally {
+        setIsAqLoading(false);
+      }
+    }
+
     loadWeather();
+    loadAirQuality();
   }, [selectedLocation]);
 
   return (
@@ -79,6 +103,9 @@ function App() {
             weather={weather} 
             isLoading={isWeatherLoading} 
             error={weatherError} 
+            airQuality={airQuality}
+            isAqLoading={isAqLoading}
+            aqError={aqError}
           />
 
         </main>

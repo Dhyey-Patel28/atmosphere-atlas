@@ -1,4 +1,4 @@
-import type { Location, WeatherData } from '../types/weather';
+import type { Location, WeatherData, AirQualityData } from '../types/weather';
 
 export async function searchLocation(query: string): Promise<Location[]> {
   if (!query.trim()) return [];
@@ -29,5 +29,21 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
   } catch (error) {
     console.error("Error fetching weather:", error);
     throw new Error('Failed to fetch weather data');
+  }
+}
+
+export async function fetchAirQuality(lat: number, lon: number): Promise<AirQualityData> {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm10,pm2_5,ozone&timezone=auto`;
+  
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching air quality:", error);
+    throw new Error('Failed to fetch air quality data');
   }
 }

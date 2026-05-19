@@ -41,3 +41,12 @@ export interface WeatherData {
   hourly: HourlyWeather;
   timezone: string;
 }
+
+export interface AirQualityData {
+  current: {
+    us_aqi?: number;
+    pm10?: number;
+    pm2_5?: number;
+    ozone?: number;
+  };
+}
