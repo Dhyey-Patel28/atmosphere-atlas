@@ -5,6 +5,7 @@ import { generateTimeline } from '../lib/timelineStory';
 import { LifeScoreCard } from './LifeScoreCard';
 import { WeatherAdviceCard } from './WeatherAdviceCard';
 import { TimelineStory } from './TimelineStory';
+import { ActivityPlanner } from './ActivityPlanner';
 
 interface WeatherPanelProps {
   location: Location | null;
@@ -123,6 +124,9 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
 
             {/* 12-Hour Timeline Story */}
             <TimelineStory events={generateTimeline(weather)} />
+
+            {/* Activity Planner */}
+            <ActivityPlanner weather={weather} />
           </>
         )}
       </div>

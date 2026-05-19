@@ -32,6 +32,7 @@ export interface HourlyWeather {
   weather_code: number[];
   wind_speed_10m?: number[];
   precipitation_probability?: number[];
+  cloud_cover?: number[];
 }
 
 export interface WeatherData {
