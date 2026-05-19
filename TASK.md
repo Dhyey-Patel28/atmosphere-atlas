@@ -2,44 +2,56 @@
 
 ## Task
 
-Polish search experience.
+Polish search with typeahead autocomplete.
 
 ## Goal
 
-Make location search faster and smoother without changing the weather or globe logic.
+Make location search feel instant and forgiving by showing location suggestions while the user types.
+
+## Current Problem
+
+Right now search is a two-step process:
+1. User types a city name.
+2. Nothing appears until they press Enter.
+3. Results appear.
+4. User selects a result.
+
+This feels slow and unclear.
 
 ## Requirements
 
-- Keep the existing Open-Meteo geocoding search.
-- Do not add new APIs.
+- Keep using the free Open-Meteo Geocoding API.
+- Do not add a new API.
 - Do not install packages.
-- Add recent searches using localStorage.
-- Show recent searches when the search input is focused and empty.
-- Allow clicking a recent search to select that location again.
-- Add a clear input button if useful.
-- Improve empty/no-results state if needed.
-- Prevent search results from being hidden behind other layout elements.
-- Keep Saved Places working if already implemented.
-- Keep current weather working.
-- Keep air quality working.
-- Keep globe marker and day/night lighting working.
-- Keep Life Score, Weather Translator, Timeline Story, and Activity Planner working.
-- Do not add historical comparison yet.
-- Do not deploy.
+- Show search suggestions automatically while the user types.
+- Use a small debounce so the API is not called on every keystroke.
+- Suggested debounce: 300-500ms.
+- Only search when query length is at least 2 or 3 characters.
+- Show loading state while suggestions are loading.
+- Show no-results state when nothing is found.
+- User can still press Enter to search.
+- User can click a suggestion to select it.
+- Basic typo tolerance should rely on Open-Meteo results if available.
+- Keep dropdown above other layout elements.
+- Make dropdown mobile-friendly.
+- Do not change weather fetching logic.
+- Do not change globe logic.
+- Do not change Life Score, Weather Translator, Timeline, Activity Planner, or Air Quality logic.
 - Do not delete files.
 
 ## Files likely to edit
 
 - src/components/SearchBar.tsx
-- src/App.tsx if needed
+- src/lib/openMeteo.ts if needed
 - src/types/weather.ts if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Recent searches appear after selecting locations
-- Recent searches persist after refresh
-- Clicking a recent search loads that location
-- Search results/dropdowns are not hidden behind layout elements
+- Suggestions appear while typing
+- Pressing Enter still works
+- Clicking a suggestion selects the location
+- Search does not spam API requests on every keystroke
+- Search dropdown is not hidden behind layout
 - Existing dashboard features still work
