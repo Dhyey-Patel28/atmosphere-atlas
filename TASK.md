@@ -2,58 +2,42 @@
 
 ## Task
 
-Build milestone 3: Current Weather.
+Build milestone 4: 3D Globe.
 
 ## Goal
 
-Fetch and display current weather for the selected location using the free Open-Meteo Forecast API.
+Replace the globe placeholder with an actual interactive 3D globe using react-globe.gl.
 
 ## Requirements
 
-- Use the selected location from Milestone 2.
-- Create or extend the Open-Meteo API helper.
-- Fetch current weather after a location is selected.
-- Do not fetch weather until a location is selected.
-- Show loading state while weather is loading.
-- Show error state if weather fetch fails.
-- Show current weather data in the dashboard panel.
-- Display:
-  - selected city name
-  - region/state if available
-  - country
-  - current temperature
-  - apparent temperature
-  - humidity
-  - wind speed
-  - wind direction if available
-  - precipitation
-  - weather condition label from weather_code
-  - whether it is day or night
-- Also fetch daily data for:
-  - high temperature
-  - low temperature
-  - sunrise
-  - sunset
-- Also fetch hourly data for later milestones, but do not build charts yet.
-- Keep the UI premium and readable.
-- Do not add the real globe yet.
+- Create a reusable GlobeView component.
+- Use react-globe.gl.
+- Replace the current globe placeholder with the real globe component.
+- Keep the existing search and weather panel working.
+- Show the selected location as a marker on the globe.
+- If no location is selected, show the globe with no marker.
+- When a location is selected, update the marker position.
+- Make the globe responsive.
+- Keep the dark atmospheric visual style.
+- Do not implement day/night shader yet.
+- Do not add saved places yet.
 - Do not add Life Score yet.
 - Do not add Activity Planner yet.
-- Do not install packages.
+- Do not install packages unless absolutely necessary.
 - Do not delete files.
 
 ## Files likely to edit
 
 - src/App.tsx
-- src/lib/openMeteo.ts
-- src/types/weather.ts
-- src/components/WeatherPanel.tsx
+- src/components/GlobeView.tsx
+- src/types/weather.ts if needed
+- src/index.css if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Searching and selecting "Detroit", "London", "Tokyo", and "Mumbai" fetches weather
-- Weather panel updates after a location is selected
-- Loading state appears while weather is being fetched
-- Invalid or failed weather fetch shows a graceful error
+- The app renders a real 3D globe
+- Searching and selecting "Detroit", "London", "Tokyo", and "Mumbai" moves or updates the location marker
+- Existing weather search and weather panel still work
+- No console errors appear
