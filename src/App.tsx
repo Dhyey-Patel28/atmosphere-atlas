@@ -1,4 +1,10 @@
+import { useState } from 'react';
+import { SearchBar } from './components/SearchBar';
+import type { Location } from './types/weather';
+
 function App() {
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+
   return (
     <div className="relative w-full min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans overflow-x-hidden">
       {/* Background Gradient */}
@@ -8,7 +14,7 @@ function App() {
       <div className="relative z-10 flex flex-col min-h-screen p-4 md:p-6 lg:p-8 gap-8 w-full max-w-[1800px] mx-auto">
         
         {/* Header Navigation */}
-        <header className="grid grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-3 items-center gap-6 w-full">
+        <header className="grid grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-3 items-center gap-6 w-full z-30">
           {/* Header Title */}
           <div className="flex justify-center md:justify-start">
             <h1 className="text-xl md:text-2xl font-bold tracking-[0.2em] text-white/90 drop-shadow-md whitespace-nowrap">
@@ -16,17 +22,9 @@ function App() {
             </h1>
           </div>
 
-          {/* Search Bar Placeholder */}
+          {/* Search Bar */}
           <div className="flex justify-center md:justify-end lg:justify-center w-full">
-            <div className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 md:p-4 shadow-xl flex items-center gap-3 transition-all hover:bg-white/15 cursor-not-allowed">
-              <span className="text-white/60 text-lg md:text-xl ml-2">&#8981;</span>
-              <input 
-                type="text" 
-                placeholder="Search city..." 
-                className="bg-transparent border-none outline-none text-white w-full placeholder:text-white/50 text-sm md:text-base cursor-not-allowed"
-                disabled
-              />
-            </div>
+            <SearchBar onLocationSelect={setSelectedLocation} />
           </div>
           
           {/* Spacer for large screens to keep search centered */}
@@ -34,16 +32,30 @@ function App() {
         </header>
 
         {/* Main Globe Area & Weather Panel */}
-        <main className="flex-1 flex flex-col xl:flex-row items-center justify-center gap-8 xl:gap-12 w-full pb-8 xl:pb-0">
+        <main className="flex-1 flex flex-col xl:flex-row items-center justify-center gap-8 xl:gap-12 w-full pb-8 xl:pb-0 z-10">
           
           {/* Globe Area */}
           <div className="flex-1 w-full flex flex-col items-center justify-center min-h-[40vh] xl:min-h-0">
-            <div className="text-center animate-pulse flex flex-col items-center justify-center">
-              <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(255,255,255,0.03)] transition-all">
-                <span className="text-white/10 text-6xl md:text-8xl">&#127758;</span>
+            {selectedLocation ? (
+              <div className="text-center animate-pulse flex flex-col items-center justify-center">
+                <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-cyan-500/30 bg-cyan-900/20 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(6,182,212,0.1)] transition-all">
+                   <span className="text-cyan-400/50 text-6xl md:text-8xl">&#127757;</span>
+                </div>
+                <h2 className="text-white text-3xl md:text-5xl font-semibold tracking-tight mb-2">
+                  {selectedLocation.name}
+                </h2>
+                <p className="text-white/60 text-lg md:text-xl font-light">
+                  {selectedLocation.admin1 ? `${selectedLocation.admin1}, ` : ''}{selectedLocation.country}
+                </p>
               </div>
-              <p className="text-white/60 text-lg md:text-xl tracking-wide font-light">Search a city to begin.</p>
-            </div>
+            ) : (
+              <div className="text-center animate-pulse flex flex-col items-center justify-center">
+                <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(255,255,255,0.03)] transition-all">
+                  <span className="text-white/10 text-6xl md:text-8xl">&#127758;</span>
+                </div>
+                <p className="text-white/60 text-lg md:text-xl tracking-wide font-light">Search a city to begin.</p>
+              </div>
+            )}
           </div>
 
           {/* Weather Panel Placeholder */}
