@@ -83,7 +83,7 @@ export function SavedPlaces({
                   pl-3 pr-1.5 py-1.5
                   transition-all duration-150 cursor-pointer
                   ${isActive
-                    ? 'bg-white/15 border-white/30 text-white'
+                    ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.15)]'
                     : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white/90 hover:border-white/20'
                   }
                 `}

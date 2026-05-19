@@ -8,6 +8,7 @@ export interface Location {
 }
 
 export interface CurrentWeather {
+  time: string;
   temperature_2m: number;
   apparent_temperature: number;
   is_day: number;
