@@ -30,6 +30,8 @@ export interface HourlyWeather {
   time: string[];
   temperature_2m: number[];
   weather_code: number[];
+  wind_speed_10m?: number[];
+  precipitation_probability?: number[];
 }
 
 export interface WeatherData {

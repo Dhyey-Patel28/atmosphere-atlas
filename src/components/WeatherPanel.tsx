@@ -1,8 +1,10 @@
 import type { Location, WeatherData } from '../types/weather';
 import { getWeatherDescription, getWeatherAdvice } from '../lib/weatherText';
 import { calculateLifeScore } from '../lib/weatherScore';
+import { generateTimeline } from '../lib/timelineStory';
 import { LifeScoreCard } from './LifeScoreCard';
 import { WeatherAdviceCard } from './WeatherAdviceCard';
+import { TimelineStory } from './TimelineStory';
 
 interface WeatherPanelProps {
   location: Location | null;
@@ -118,6 +120,9 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
 
             {/* Weather Translator Advice */}
             <WeatherAdviceCard advice={getWeatherAdvice(weather.current)} />
+
+            {/* 12-Hour Timeline Story */}
+            <TimelineStory events={generateTimeline(weather)} />
           </>
         )}
       </div>
