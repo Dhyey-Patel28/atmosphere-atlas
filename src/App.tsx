@@ -1,9 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SearchBar } from './components/SearchBar';
-import type { Location } from './types/weather';
+import { WeatherPanel } from './components/WeatherPanel';
+import { fetchWeather } from './lib/openMeteo';
+import type { Location, WeatherData } from './types/weather';
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [isWeatherLoading, setIsWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadWeather() {
+      if (!selectedLocation) return;
+      
+      setIsWeatherLoading(true);
+      setWeatherError(null);
+      
+      try {
+        const data = await fetchWeather(selectedLocation.latitude, selectedLocation.longitude);
+        setWeather(data);
+      } catch (err) {
+        setWeatherError('Failed to retrieve weather data.');
+      } finally {
+        setIsWeatherLoading(false);
+      }
+    }
+
+    loadWeather();
+  }, [selectedLocation]);
 
   return (
     <div className="relative w-full min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans overflow-x-hidden">
@@ -37,14 +62,14 @@ function App() {
           {/* Globe Area */}
           <div className="flex-1 w-full flex flex-col items-center justify-center min-h-[40vh] xl:min-h-0">
             {selectedLocation ? (
-              <div className="text-center animate-pulse flex flex-col items-center justify-center">
+              <div className="text-center animate-fade-in flex flex-col items-center justify-center">
                 <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-cyan-500/30 bg-cyan-900/20 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(6,182,212,0.1)] transition-all">
                    <span className="text-cyan-400/50 text-6xl md:text-8xl">&#127757;</span>
                 </div>
                 <h2 className="text-white text-3xl md:text-5xl font-semibold tracking-tight mb-2">
                   {selectedLocation.name}
                 </h2>
-                <p className="text-white/60 text-lg md:text-xl font-light">
+                <p className="text-white/60 text-lg md:text-xl font-light mt-2">
                   {selectedLocation.admin1 ? `${selectedLocation.admin1}, ` : ''}{selectedLocation.country}
                 </p>
               </div>
@@ -53,19 +78,18 @@ function App() {
                 <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(255,255,255,0.03)] transition-all">
                   <span className="text-white/10 text-6xl md:text-8xl">&#127758;</span>
                 </div>
-                <p className="text-white/60 text-lg md:text-xl tracking-wide font-light">Search a city to begin.</p>
+                <p className="text-white/60 text-lg md:text-xl tracking-wide font-light mt-2">Search a city to begin.</p>
               </div>
             )}
           </div>
 
-          {/* Weather Panel Placeholder */}
-          <aside className="w-full max-w-md xl:max-w-none xl:w-[400px] shrink-0 opacity-50 flex flex-col items-center xl:items-stretch justify-center">
-            <div className="w-full bg-slate-900/30 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 shadow-2xl h-64 xl:h-[75vh] flex flex-col gap-4">
-              <div className="h-6 w-1/3 bg-white/10 rounded-full"></div>
-              <div className="flex-1 bg-white/5 rounded-2xl border border-white/5"></div>
-              <div className="h-32 bg-white/5 rounded-2xl border border-white/5"></div>
-            </div>
-          </aside>
+          {/* Weather Panel Component */}
+          <WeatherPanel 
+            location={selectedLocation} 
+            weather={weather} 
+            isLoading={isWeatherLoading} 
+            error={weatherError} 
+          />
 
         </main>
       </div>
