@@ -1,5 +1,30 @@
 # Atmosphere Atlas Roadmap
 
+## Current Project State
+
+The core MVP features are implemented:
+
+- Static layout
+- Location search
+- Current weather
+- 3D globe
+- Selected location marker
+- Day/night globe lighting
+- Life Score
+- Weather Translator
+- Timeline Story
+- Activity Planner
+- Air Quality
+
+Current focus:
+
+- Search autocomplete and local cache
+- Recent selected locations
+- Saved Places
+- UI polish in small, safe passes
+- Performance optimization
+- Deployment
+
 ## MVP Phase
 
 ### 1. Static Layout
@@ -16,7 +41,7 @@ Includes:
 - Empty state
 
 Status:
-Not started
+Done
 
 ---
 
@@ -34,7 +59,7 @@ Includes:
 - Error state
 
 Status:
-Not started
+Done
 
 ---
 
@@ -53,7 +78,7 @@ Includes:
 - Sunrise and sunset
 
 Status:
-Not started
+Done
 
 ---
 
@@ -69,7 +94,7 @@ Includes:
 - Responsive sizing
 
 Status:
-Not started
+Done
 
 ---
 
@@ -85,7 +110,7 @@ Includes:
 - Camera movement to selected location
 
 Status:
-Not started
+Done
 
 ---
 
@@ -101,7 +126,7 @@ Includes:
 - Optional terminator effect
 
 Status:
-Not started
+Done
 
 ---
 
@@ -117,7 +142,7 @@ Includes:
 - Uses temp, apparent temp, humidity, wind, rain, UV
 
 Status:
-Not started
+Done
 
 ---
 
@@ -133,7 +158,7 @@ Includes:
 - Health advice
 
 Status:
-Not started
+Done
 
 ---
 
@@ -150,7 +175,7 @@ Includes:
 - Best outdoor window
 
 Status:
-Not started
+Done
 
 ---
 
@@ -168,7 +193,7 @@ Activities:
 - Stargazing
 
 Status:
-Not started
+Done
 
 ---
 
@@ -185,7 +210,7 @@ Includes:
 - Simple health label
 
 Status:
-Not started
+Done
 
 ---
 
@@ -235,4 +260,4 @@ Includes:
 - Smooth transitions
 
 Status:
-Not started
+In Progress
