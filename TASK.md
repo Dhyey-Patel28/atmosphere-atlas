@@ -2,37 +2,43 @@
 
 ## Task
 
-Build milestone 7: Weather Translator.
+Build milestone 8: Timeline Story.
 
 ## Goal
 
-Add human-friendly weather advice that translates raw weather conditions into practical real-life guidance.
+Use the already-fetched hourly forecast data to generate a short, human-readable timeline of the next 12 hours.
 
 ## Requirements
 
-- Create a weatherText/advice utility or extend the existing weatherText utility.
-- Create a WeatherAdviceCard component if useful.
-- Use current weather data from the selected location.
-- Generate short advice for:
-  - clothing
-  - commute
-  - outdoor activity
-  - health/comfort
-- Advice should be specific, not generic.
-- Use temperature, apparent temperature, humidity, wind, precipitation, weather code, and day/night if useful.
-- Add the advice to the weather panel.
-- Keep the Life Score card working.
+- Create a TimelineStory component.
+- Create a timeline utility if useful.
+- Use hourly weather data already fetched from Open-Meteo.
+- Do not make a new API call unless absolutely necessary.
+- Generate 4 to 6 timeline events.
+- Each event should include:
+  - time
+  - short title
+  - one-sentence explanation
+- Detect useful events such as:
+  - best comfort window
+  - rain starting or rain risk increasing
+  - wind picking up
+  - temperature peak
+  - temperature drop later
+  - sunset or nighttime transition if available
+- Add the timeline to the weather panel or below the weather panel.
+- Keep Life Score working.
+- Keep Weather Translator working.
 - Keep search, weather fetching, globe, marker, and day/night features working.
 - Do not add Activity Planner yet.
-- Do not add Timeline Story yet.
 - Do not add Air Quality yet.
 - Do not install packages.
 - Do not delete files.
 
 ## Files likely to edit
 
-- src/lib/weatherText.ts
-- src/components/WeatherAdviceCard.tsx
+- src/components/TimelineStory.tsx
+- src/lib/timelineStory.ts
 - src/components/WeatherPanel.tsx
 - src/types/weather.ts if needed
 
@@ -40,7 +46,8 @@ Add human-friendly weather advice that translates raw weather conditions into pr
 
 - npm run dev works
 - npm run build works
-- Selecting a city shows practical weather advice
-- Advice updates when selecting a new city
-- Advice includes clothing, commute, outdoor, and comfort/health guidance
-- Existing Life Score and weather panel still work
+- Selecting a city shows a 4 to 6 item timeline
+- Timeline updates when selecting a different city
+- Timeline uses hourly data
+- Existing Life Score and Weather Translator still work
+- Existing globe and weather behavior still works
