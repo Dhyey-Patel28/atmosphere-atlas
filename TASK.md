@@ -2,42 +2,55 @@
 
 ## Task
 
-Build milestone 4: 3D Globe.
+Build milestone 5: Day/Night Globe.
 
 ## Goal
 
-Replace the globe placeholder with an actual interactive 3D globe using react-globe.gl.
+Add a simple day/night visual effect to the 3D globe so the app feels like a living planet dashboard.
 
 ## Requirements
 
-- Create a reusable GlobeView component.
-- Use react-globe.gl.
-- Replace the current globe placeholder with the real globe component.
-- Keep the existing search and weather panel working.
-- Show the selected location as a marker on the globe.
-- If no location is selected, show the globe with no marker.
-- When a location is selected, update the marker position.
-- Make the globe responsive.
-- Keep the dark atmospheric visual style.
-- Do not implement day/night shader yet.
+- Keep the existing 3D globe working.
+- Keep selected location marker working.
+- Keep search and weather panel working.
+- Add a simple day/night visual effect.
+- Show which parts of Earth are in daylight and which parts are in darkness.
+- Use current UTC time to estimate sun position.
+- Keep the implementation understandable.
+- Add comments for the sun/day-night calculation.
+- Do not over-engineer a perfect scientific model.
 - Do not add saved places yet.
 - Do not add Life Score yet.
 - Do not add Activity Planner yet.
 - Do not install packages unless absolutely necessary.
 - Do not delete files.
+- Keep mobile scroll behavior working.
+
+## Preferred Implementation
+
+Start with a practical version:
+
+- Keep the globe texture.
+- Add or adjust lighting based on sun position.
+- Add a subtle dark/night overlay if practical.
+- Add a small sun indicator or directional light if simple.
+- Avoid complex shader work unless it is stable and easy to understand.
 
 ## Files likely to edit
 
-- src/App.tsx
 - src/components/GlobeView.tsx
-- src/types/weather.ts if needed
-- src/index.css if needed
+- src/lib/time.ts if useful
+- src/App.tsx only if needed
+- src/index.css only if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- The app renders a real 3D globe
-- Searching and selecting "Detroit", "London", "Tokyo", and "Mumbai" moves or updates the location marker
-- Existing weather search and weather panel still work
+- Globe still renders
+- Marker still appears after selecting a location
+- Search still works
+- Weather panel still works
+- Mobile page scrolling still works
+- There is a visible day/night effect or sun-direction effect
 - No console errors appear
