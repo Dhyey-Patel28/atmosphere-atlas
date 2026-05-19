@@ -2,52 +2,51 @@
 
 ## Task
 
-Build milestone 10: Air Quality.
+Build milestone 11: Saved Places.
 
 ## Goal
 
-Fetch and display air quality data for the selected location using the free Open-Meteo Air Quality API.
+Let users save selected locations locally and quickly return to them.
 
 ## Requirements
 
+- Create a SavedPlaces component.
 - Use the selected location from the existing app state.
-- Create an AirQualityCard component.
-- Extend the Open-Meteo API helper with an air quality fetch function.
-- Fetch air quality after a location is selected.
-- Do not fetch air quality until a location is selected.
-- Show loading state while air quality is loading.
-- Show graceful error state if air quality fetch fails.
-- Display:
-  - US AQI if available
-  - PM2.5
-  - PM10
-  - ozone if available
-  - simple health label
-  - short advice sentence
-- Keep Current Weather working.
+- User can save the currently selected location.
+- Saved places persist in localStorage.
+- User can click a saved place to select it again.
+- User can remove a saved place.
+- Saved places should be compact and not make the layout worse.
+- Saved places should not duplicate the same city/location.
+- Keep search working.
+- Keep current weather working.
+- Keep air quality working.
+- Keep 3D globe working.
+- Keep selected location marker working.
+- Keep day/night lighting working.
 - Keep Life Score working.
 - Keep Weather Translator working.
 - Keep Timeline Story working.
 - Keep Activity Planner working.
-- Keep search, globe, marker, and day/night features working.
-- Do not add saved places yet.
 - Do not add historical comparison yet.
 - Do not install packages.
 - Do not delete files.
+- Do not deploy.
 
 ## Files likely to edit
 
-- src/components/AirQualityCard.tsx
-- src/lib/openMeteo.ts
-- src/types/weather.ts
-- src/components/WeatherPanel.tsx
+- src/components/SavedPlaces.tsx
 - src/App.tsx
+- src/types/weather.ts if needed
+- src/components/WeatherPanel.tsx if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Selecting a city fetches air quality data
-- Air quality card appears in the weather panel
-- Air quality updates when selecting a different city
+- User can save the selected location
+- Saved places remain after page refresh
+- Clicking a saved place reloads that location
+- Removing a saved place works
+- Duplicate saved places are prevented
 - Existing dashboard features still work
