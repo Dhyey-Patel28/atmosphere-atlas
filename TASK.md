@@ -2,54 +2,48 @@
 
 ## Task
 
-Build Saved Places.
+Human-centered UX audit and controlled UI/UX revamp.
 
 ## Goal
 
-Let users save selected locations locally and quickly return to them.
+Review the current Atmosphere Atlas app from the perspective of a senior UX designer and improve the most annoying usability issues without breaking functionality.
 
 ## Requirements
 
-- Create a SavedPlaces component.
-- Use the selected location from the existing app state.
-- User can save the currently selected location.
-- Saved places persist in localStorage.
-- User can click a saved place to select it again.
-- User can remove a saved place.
-- Prevent duplicate saved places.
-- Limit saved places to 8 or 10.
-- Keep UI compact so it does not make the layout worse.
-- Place saved places somewhere sensible near the search area or weather panel.
-- Optional: show saved places as extra globe markers only if simple and safe.
-- Keep search autocomplete/cache working.
-- Keep current weather working.
-- Keep air quality working.
-- Keep 3D globe working.
-- Keep selected location marker working.
-- Keep day/night lighting working.
-- Keep Life Score working.
-- Keep Weather Translator working.
-- Keep Timeline Story working.
-- Keep Activity Planner working.
-- Do not add historical comparison yet.
+- Use browser testing.
+- Test desktop, tablet, and mobile widths.
+- Identify what users may find annoying, confusing, crowded, hard to read, or hard to use.
+- Prioritize human-centered usability over adding new features.
+- Improve layout, hierarchy, spacing, scanability, and interaction clarity.
+- Keep all existing features working.
 - Do not install packages.
 - Do not delete files.
+- Do not change package.json.
+- Do not change API logic unless fixing a clear UI-related bug.
 - Do not deploy.
+- Do not run git commands.
 
-## Files likely to edit
+## UX focus areas
 
-- src/components/SavedPlaces.tsx
-- src/App.tsx
-- src/components/GlobeView.tsx only if adding saved markers
-- src/types/weather.ts if needed
+- First impression
+- Search usability
+- Current weather readability
+- Globe usefulness and size
+- Weather panel organization
+- Too much scrolling
+- Card hierarchy
+- Mobile usability
+- Tablet usability
+- Desktop usability
+- Accessibility and readable text sizes
+- Loading, empty, and error states
+- Whether the app feels human-centered instead of data-heavy
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- User can save the selected location
-- Saved places remain after page refresh
-- Clicking a saved place reloads weather/globe for that location
-- Removing a saved place works
-- Duplicate saved places are prevented
-- Existing dashboard features still work
+- Browser testing is completed
+- Issues are documented
+- The highest-impact UI/UX improvements are implemented
+- Existing features still work
