@@ -2,52 +2,59 @@
 
 ## Task
 
-Build milestone 8: Timeline Story.
+Build milestone 9: Activity Planner.
 
 ## Goal
 
-Use the already-fetched hourly forecast data to generate a short, human-readable timeline of the next 12 hours.
+Recommend the best time today for common activities using the hourly forecast data already fetched from Open-Meteo.
 
 ## Requirements
 
-- Create a TimelineStory component.
-- Create a timeline utility if useful.
+- Create an ActivityPlanner component.
+- Create an activity planning utility if useful.
 - Use hourly weather data already fetched from Open-Meteo.
 - Do not make a new API call unless absolutely necessary.
-- Generate 4 to 6 timeline events.
-- Each event should include:
-  - time
-  - short title
-  - one-sentence explanation
-- Detect useful events such as:
-  - best comfort window
-  - rain starting or rain risk increasing
-  - wind picking up
-  - temperature peak
-  - temperature drop later
-  - sunset or nighttime transition if available
-- Add the timeline to the weather panel or below the weather panel.
+- Add activity buttons:
+  - Walk
+  - Run
+  - Bike
+  - Drive
+  - Photography
+  - Stargazing
+- When an activity is selected, recommend the best time today.
+- Show:
+  - selected activity
+  - best time
+  - short reason
+- Use simple scoring rules:
+  - Walk: comfortable temperature, low rain, low wind
+  - Run: cooler temperature, low rain, moderate wind okay
+  - Bike: low wind, low rain
+  - Drive: low precipitation, low wind
+  - Photography: near sunrise/sunset, low precipitation
+  - Stargazing: after sunset/night, low precipitation, lower cloud/rain risk if available
 - Keep Life Score working.
 - Keep Weather Translator working.
+- Keep Timeline Story working.
 - Keep search, weather fetching, globe, marker, and day/night features working.
-- Do not add Activity Planner yet.
 - Do not add Air Quality yet.
 - Do not install packages.
 - Do not delete files.
 
 ## Files likely to edit
 
-- src/components/TimelineStory.tsx
-- src/lib/timelineStory.ts
+- src/components/ActivityPlanner.tsx
+- src/lib/activityPlanner.ts
 - src/components/WeatherPanel.tsx
 - src/types/weather.ts if needed
+- src/lib/openMeteo.ts if additional existing-hourly fields are needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Selecting a city shows a 4 to 6 item timeline
-- Timeline updates when selecting a different city
-- Timeline uses hourly data
-- Existing Life Score and Weather Translator still work
+- Activity buttons appear
+- Selecting an activity shows a best time and reason
+- Recommendations update when selecting a different city
+- Existing Life Score, Weather Translator, and Timeline Story still work
 - Existing globe and weather behavior still works
