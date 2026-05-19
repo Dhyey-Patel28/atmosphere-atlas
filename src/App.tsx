@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { WeatherPanel } from './components/WeatherPanel';
+import { GlobeView } from './components/GlobeView';
 import { fetchWeather } from './lib/openMeteo';
 import type { Location, WeatherData } from './types/weather';
 
@@ -60,25 +61,14 @@ function App() {
         <main className="flex-1 flex flex-col xl:flex-row items-center justify-center gap-8 xl:gap-12 w-full pb-8 xl:pb-0 z-10">
           
           {/* Globe Area */}
-          <div className="flex-1 w-full flex flex-col items-center justify-center min-h-[40vh] xl:min-h-0">
-            {selectedLocation ? (
-              <div className="text-center animate-fade-in flex flex-col items-center justify-center">
-                <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-cyan-500/30 bg-cyan-900/20 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(6,182,212,0.1)] transition-all">
-                   <span className="text-cyan-400/50 text-6xl md:text-8xl">&#127757;</span>
-                </div>
-                <h2 className="text-white text-3xl md:text-5xl font-semibold tracking-tight mb-2">
-                  {selectedLocation.name}
-                </h2>
-                <p className="text-white/60 text-lg md:text-xl font-light mt-2">
-                  {selectedLocation.admin1 ? `${selectedLocation.admin1}, ` : ''}{selectedLocation.country}
+          <div className="flex-1 w-full flex flex-col items-center justify-center min-h-[50vh] xl:min-h-0 relative">
+            <GlobeView location={selectedLocation} />
+            
+            {!selectedLocation && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
+                <p className="text-white/50 text-lg md:text-xl tracking-wide font-light bg-slate-950/50 px-6 py-3 rounded-full backdrop-blur-md border border-white/10 animate-pulse">
+                  Search a city to begin.
                 </p>
-              </div>
-            ) : (
-              <div className="text-center animate-pulse flex flex-col items-center justify-center">
-                <div className="w-48 h-48 md:w-80 md:h-80 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm flex items-center justify-center mb-8 shadow-[0_0_80px_rgba(255,255,255,0.03)] transition-all">
-                  <span className="text-white/10 text-6xl md:text-8xl">&#127758;</span>
-                </div>
-                <p className="text-white/60 text-lg md:text-xl tracking-wide font-light mt-2">Search a city to begin.</p>
               </div>
             )}
           </div>
