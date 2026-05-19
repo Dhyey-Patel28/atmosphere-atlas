@@ -2,51 +2,44 @@
 
 ## Task
 
-Build milestone 11: Saved Places.
+Polish search experience.
 
 ## Goal
 
-Let users save selected locations locally and quickly return to them.
+Make location search faster and smoother without changing the weather or globe logic.
 
 ## Requirements
 
-- Create a SavedPlaces component.
-- Use the selected location from the existing app state.
-- User can save the currently selected location.
-- Saved places persist in localStorage.
-- User can click a saved place to select it again.
-- User can remove a saved place.
-- Saved places should be compact and not make the layout worse.
-- Saved places should not duplicate the same city/location.
-- Keep search working.
+- Keep the existing Open-Meteo geocoding search.
+- Do not add new APIs.
+- Do not install packages.
+- Add recent searches using localStorage.
+- Show recent searches when the search input is focused and empty.
+- Allow clicking a recent search to select that location again.
+- Add a clear input button if useful.
+- Improve empty/no-results state if needed.
+- Prevent search results from being hidden behind other layout elements.
+- Keep Saved Places working if already implemented.
 - Keep current weather working.
 - Keep air quality working.
-- Keep 3D globe working.
-- Keep selected location marker working.
-- Keep day/night lighting working.
-- Keep Life Score working.
-- Keep Weather Translator working.
-- Keep Timeline Story working.
-- Keep Activity Planner working.
+- Keep globe marker and day/night lighting working.
+- Keep Life Score, Weather Translator, Timeline Story, and Activity Planner working.
 - Do not add historical comparison yet.
-- Do not install packages.
-- Do not delete files.
 - Do not deploy.
+- Do not delete files.
 
 ## Files likely to edit
 
-- src/components/SavedPlaces.tsx
-- src/App.tsx
+- src/components/SearchBar.tsx
+- src/App.tsx if needed
 - src/types/weather.ts if needed
-- src/components/WeatherPanel.tsx if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- User can save the selected location
-- Saved places remain after page refresh
-- Clicking a saved place reloads that location
-- Removing a saved place works
-- Duplicate saved places are prevented
+- Recent searches appear after selecting locations
+- Recent searches persist after refresh
+- Clicking a recent search loads that location
+- Search results/dropdowns are not hidden behind layout elements
 - Existing dashboard features still work
