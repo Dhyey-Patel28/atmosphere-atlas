@@ -2,59 +2,52 @@
 
 ## Task
 
-Build milestone 9: Activity Planner.
+Build milestone 10: Air Quality.
 
 ## Goal
 
-Recommend the best time today for common activities using the hourly forecast data already fetched from Open-Meteo.
+Fetch and display air quality data for the selected location using the free Open-Meteo Air Quality API.
 
 ## Requirements
 
-- Create an ActivityPlanner component.
-- Create an activity planning utility if useful.
-- Use hourly weather data already fetched from Open-Meteo.
-- Do not make a new API call unless absolutely necessary.
-- Add activity buttons:
-  - Walk
-  - Run
-  - Bike
-  - Drive
-  - Photography
-  - Stargazing
-- When an activity is selected, recommend the best time today.
-- Show:
-  - selected activity
-  - best time
-  - short reason
-- Use simple scoring rules:
-  - Walk: comfortable temperature, low rain, low wind
-  - Run: cooler temperature, low rain, moderate wind okay
-  - Bike: low wind, low rain
-  - Drive: low precipitation, low wind
-  - Photography: near sunrise/sunset, low precipitation
-  - Stargazing: after sunset/night, low precipitation, lower cloud/rain risk if available
+- Use the selected location from the existing app state.
+- Create an AirQualityCard component.
+- Extend the Open-Meteo API helper with an air quality fetch function.
+- Fetch air quality after a location is selected.
+- Do not fetch air quality until a location is selected.
+- Show loading state while air quality is loading.
+- Show graceful error state if air quality fetch fails.
+- Display:
+  - US AQI if available
+  - PM2.5
+  - PM10
+  - ozone if available
+  - simple health label
+  - short advice sentence
+- Keep Current Weather working.
 - Keep Life Score working.
 - Keep Weather Translator working.
 - Keep Timeline Story working.
-- Keep search, weather fetching, globe, marker, and day/night features working.
-- Do not add Air Quality yet.
+- Keep Activity Planner working.
+- Keep search, globe, marker, and day/night features working.
+- Do not add saved places yet.
+- Do not add historical comparison yet.
 - Do not install packages.
 - Do not delete files.
 
 ## Files likely to edit
 
-- src/components/ActivityPlanner.tsx
-- src/lib/activityPlanner.ts
+- src/components/AirQualityCard.tsx
+- src/lib/openMeteo.ts
+- src/types/weather.ts
 - src/components/WeatherPanel.tsx
-- src/types/weather.ts if needed
-- src/lib/openMeteo.ts if additional existing-hourly fields are needed
+- src/App.tsx
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Activity buttons appear
-- Selecting an activity shows a best time and reason
-- Recommendations update when selecting a different city
-- Existing Life Score, Weather Translator, and Timeline Story still work
-- Existing globe and weather behavior still works
+- Selecting a city fetches air quality data
+- Air quality card appears in the weather panel
+- Air quality updates when selecting a different city
+- Existing dashboard features still work
