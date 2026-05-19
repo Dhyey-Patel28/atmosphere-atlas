@@ -17,27 +17,21 @@ export function ActivityPlanner({ weather }: ActivityPlannerProps) {
     <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 relative overflow-hidden transition-all hover:bg-white/10 mt-1 shadow-lg">
       <h4 className="text-white/60 uppercase tracking-widest text-xs font-semibold">Activity Planner</h4>
       
-      {/* Scrollable Pills */}
-      <div 
-        className="flex overflow-x-auto gap-2 pb-2 -mx-2 px-2"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
-        <div className="flex gap-2 scrollbar-hide">
-          {ACTIVITIES.map((act) => (
-            <button
-              key={act}
-              onClick={() => setSelected(act)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                selected === act 
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' 
-                  : 'bg-white/5 border-transparent text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              {act}
-            </button>
-          ))}
-        </div>
+      {/* Activity Selection Buttons */}
+      <div className="flex flex-wrap gap-1.5">
+        {ACTIVITIES.map((act) => (
+          <button
+            key={act}
+            onClick={() => setSelected(act)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+              selected === act 
+                ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.15)]' 
+                : 'bg-white/5 border-white/5 text-white/60 hover:text-white hover:bg-white/10 hover:border-white/10'
+            }`}
+          >
+            {act}
+          </button>
+        ))}
       </div>
 
       {/* Result Display */}

@@ -232,7 +232,7 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
 
       {/* ── Dropdown ─────────────────────────────────────────────────────────── */}
       {dropdownVisible && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/98 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-slate-950 border border-white/15 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden z-[9999]">
 
           {/* ── "Keep typing" hint ─────────────────────────────────────────── */}
           {showTooShort && (
