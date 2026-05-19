@@ -2,55 +2,51 @@
 
 ## Task
 
-Build milestone 5: Day/Night Globe.
+Build milestone 6: Life Score.
 
 ## Goal
 
-Add a simple day/night visual effect to the 3D globe so the app feels like a living planet dashboard.
+Add an outdoor comfort score that translates raw weather data into a meaningful 0-100 "Life Score."
 
 ## Requirements
 
-- Keep the existing 3D globe working.
-- Keep selected location marker working.
-- Keep search and weather panel working.
-- Add a simple day/night visual effect.
-- Show which parts of Earth are in daylight and which parts are in darkness.
-- Use current UTC time to estimate sun position.
-- Keep the implementation understandable.
-- Add comments for the sun/day-night calculation.
-- Do not over-engineer a perfect scientific model.
-- Do not add saved places yet.
-- Do not add Life Score yet.
+- Create a reusable LifeScoreCard component.
+- Create a weatherScore utility.
+- Use current weather data from the selected location.
+- Calculate a 0-100 score.
+- Score should consider:
+  - apparent temperature
+  - humidity
+  - wind speed
+  - precipitation
+  - weather condition if useful
+- Show a label:
+  - 90-100: Perfect outside
+  - 75-89: Great
+  - 55-74: Okay
+  - 35-54: Uncomfortable
+  - 0-34: Avoid long exposure
+- Show a short explanation of why the score was given.
+- Add the card to the weather panel.
+- Keep existing search, weather, globe, marker, and day/night features working.
 - Do not add Activity Planner yet.
-- Do not install packages unless absolutely necessary.
+- Do not add Timeline Story yet.
+- Do not add Air Quality yet.
+- Do not install packages.
 - Do not delete files.
-- Keep mobile scroll behavior working.
-
-## Preferred Implementation
-
-Start with a practical version:
-
-- Keep the globe texture.
-- Add or adjust lighting based on sun position.
-- Add a subtle dark/night overlay if practical.
-- Add a small sun indicator or directional light if simple.
-- Avoid complex shader work unless it is stable and easy to understand.
 
 ## Files likely to edit
 
-- src/components/GlobeView.tsx
-- src/lib/time.ts if useful
-- src/App.tsx only if needed
-- src/index.css only if needed
+- src/components/LifeScoreCard.tsx
+- src/lib/weatherScore.ts
+- src/components/WeatherPanel.tsx
+- src/types/weather.ts if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Globe still renders
-- Marker still appears after selecting a location
-- Search still works
-- Weather panel still works
-- Mobile page scrolling still works
-- There is a visible day/night effect or sun-direction effect
-- No console errors appear
+- Selecting a city shows a Life Score in the weather panel
+- Score changes based on weather conditions
+- Explanation text appears
+- Existing globe and weather behavior still works
