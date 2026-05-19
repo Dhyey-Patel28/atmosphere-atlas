@@ -2,35 +2,42 @@
 
 ## Task
 
-Build milestone 1: Static Layout.
+Build milestone 2: Location Search.
 
 ## Goal
 
-Create the first polished dashboard layout for Atmosphere Atlas.
+Implement city search using the free Open-Meteo Geocoding API.
 
 ## Requirements
 
-- Fullscreen dark app
-- Header with app name
-- Search bar placeholder at the top
-- Large globe placeholder area
-- Weather panel placeholder
-- Empty state text: "Search a city to begin."
-- Responsive design
-- Use Tailwind CSS
-- Do not fetch APIs yet
-- Do not add globe yet
-- Do not install packages
-- Do not delete files
+- Create a reusable search component.
+- Create an Open-Meteo API helper.
+- User can type a city name.
+- User can submit the search.
+- Show up to 5 location results.
+- Each result should show city, region/state if available, and country.
+- User can select a result.
+- Store selected location in App state.
+- Show selected location name in the dashboard.
+- Do not fetch weather forecast yet.
+- Do not add the real globe yet.
+- Do not install packages.
+- Do not delete files.
+- Handle loading state.
+- Handle error state.
+- Handle no results state.
 
 ## Files likely to edit
 
 - src/App.tsx
-- src/index.css
-- src/App.css if still used
+- src/components/SearchBar.tsx
+- src/lib/openMeteo.ts
+- src/types/weather.ts
+- src/index.css if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- The page looks like a premium weather dashboard shell
+- Searching "Detroit", "London", "Tokyo", and "Mumbai" returns selectable results
+- Selecting a result updates the dashboard with that location
