@@ -14,6 +14,7 @@ function App() {
   const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
   const [isAqLoading, setIsAqLoading] = useState(false);
   const [aqError, setAqError] = useState<string | null>(null);
+
   useEffect(() => {
     if (!selectedLocation) {
       setWeather(null);
@@ -22,15 +23,14 @@ function App() {
     }
 
     const loc = selectedLocation;
-    
+
     async function loadWeather() {
       setIsWeatherLoading(true);
       setWeatherError(null);
-      
       try {
         const data = await fetchWeather(loc.latitude, loc.longitude);
         setWeather(data);
-      } catch (err) {
+      } catch {
         setWeatherError('Failed to retrieve weather data.');
       } finally {
         setIsWeatherLoading(false);
@@ -40,11 +40,10 @@ function App() {
     async function loadAirQuality() {
       setIsAqLoading(true);
       setAqError(null);
-      
       try {
         const data = await fetchAirQuality(loc.latitude, loc.longitude);
         setAirQuality(data);
-      } catch (err) {
+      } catch {
         setAqError('Failed to retrieve air quality data.');
       } finally {
         setIsAqLoading(false);
@@ -57,61 +56,66 @@ function App() {
 
   return (
     <div className="relative w-full min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans overflow-x-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black z-0 pointer-events-none"></div>
+      {/* Background */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black z-0 pointer-events-none" />
 
-      {/* Main Content Wrapper */}
-      <div className="relative z-10 flex flex-col min-h-screen p-4 md:p-6 lg:p-8 gap-8 w-full max-w-[1800px] mx-auto">
-        
-        {/* Header Navigation */}
-        <header className="grid grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-3 items-center gap-6 w-full z-30">
-          {/* Header Title */}
-          <div className="flex justify-center md:justify-start">
-            <h1 className="text-xl md:text-2xl font-bold tracking-[0.2em] text-white/90 drop-shadow-md whitespace-nowrap">
-              ATMOSPHERE ATLAS
-            </h1>
-          </div>
+      {/* ── HEADER ─────────────────────────────────────────────────────────── */}
+      {/* Sticky on desktop so search is always accessible */}
+      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-3 flex items-center gap-6">
+          {/* Logo */}
+          <h1 className="text-base md:text-lg font-bold tracking-[0.2em] text-white/90 whitespace-nowrap shrink-0">
+            ATMOSPHERE ATLAS
+          </h1>
 
-          {/* Search Bar */}
-          <div className="flex justify-center md:justify-end lg:justify-center w-full">
+          {/* Search — grows to fill space but stays right-ish */}
+          <div className="flex-1 flex justify-center">
             <SearchBar onLocationSelect={setSelectedLocation} />
           </div>
-          
-          {/* Spacer for large screens to keep search centered */}
-          <div className="hidden lg:block"></div>
-        </header>
+        </div>
+      </header>
 
-        {/* Main Globe Area & Weather Panel */}
-        <main className="flex-1 flex flex-col xl:flex-row items-center justify-center gap-8 xl:gap-12 w-full pb-8 xl:pb-0 z-10">
-          
-          {/* Globe Area */}
-          <div className="flex-1 w-full flex flex-col items-center justify-center min-h-[50vh] xl:min-h-0 relative">
+      {/* ── MAIN AREA ──────────────────────────────────────────────────────── */}
+      <main className="relative z-10 flex-1 w-full max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
+
+        {/* Desktop: side-by-side. Mobile: stacked */}
+        <div className="flex flex-col xl:flex-row gap-4 xl:gap-6 xl:h-[calc(100vh-5rem)]">
+
+          {/* ── GLOBE COLUMN ────────────────────────────────────────────────── */}
+          <div className="relative flex-1 flex flex-col rounded-[2rem] overflow-hidden bg-slate-900/20 border border-white/5 shadow-2xl
+                          h-[56vw] max-h-[420px]
+                          xl:h-auto xl:max-h-none xl:min-h-0">
             <GlobeView location={selectedLocation} />
-            
+
+            {/* "Search a city" hint — centred over globe */}
             {!selectedLocation && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
-                <p className="text-white/50 text-lg md:text-xl tracking-wide font-light bg-slate-950/50 px-6 py-3 rounded-full backdrop-blur-md border border-white/10 animate-pulse">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <p className="text-white/50 text-base md:text-lg tracking-wide font-light
+                               bg-slate-950/60 px-5 py-2.5 rounded-full backdrop-blur-md
+                               border border-white/10 animate-pulse">
                   Search a city to begin.
                 </p>
               </div>
             )}
           </div>
 
-          {/* Weather Panel Component */}
-          <WeatherPanel 
-            location={selectedLocation} 
-            weather={weather} 
-            isLoading={isWeatherLoading} 
-            error={weatherError} 
-            airQuality={airQuality}
-            isAqLoading={isAqLoading}
-            aqError={aqError}
-          />
+          {/* ── WEATHER PANEL COLUMN ────────────────────────────────────────── */}
+          <div className="w-full xl:w-[420px] xl:shrink-0 xl:h-full">
+            <WeatherPanel
+              location={selectedLocation}
+              weather={weather}
+              isLoading={isWeatherLoading}
+              error={weatherError}
+              airQuality={airQuality}
+              isAqLoading={isAqLoading}
+              aqError={aqError}
+            />
+          </div>
 
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

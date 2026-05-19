@@ -103,7 +103,7 @@ export function GlobeView({ location }: GlobeViewProps) {
   const markerData = locationMarker ? [locationMarker, sunMarker] : [sunMarker];
 
   return (
-    <div ref={containerRef} className="w-full h-full min-h-[40vh] xl:min-h-[600px] flex items-center justify-center pointer-events-none lg:pointer-events-auto lg:cursor-grab lg:active:cursor-grabbing">
+    <div ref={containerRef} className="w-full h-full min-h-[200px] flex items-center justify-center pointer-events-none lg:pointer-events-auto lg:cursor-grab lg:active:cursor-grabbing">
       {dimensions.width > 0 && dimensions.height > 0 && (
         <Globe
           ref={globeEl}
