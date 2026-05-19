@@ -2,48 +2,51 @@
 
 ## Task
 
-Human-centered UX audit and controlled UI/UX revamp.
+Fix UX polish issues after dashboard redesign.
 
 ## Goal
 
-Review the current Atmosphere Atlas app from the perspective of a senior UX designer and improve the most annoying usability issues without breaking functionality.
+Fix small but important usability problems introduced or revealed by the latest UI polish pass.
 
 ## Requirements
 
-- Use browser testing.
-- Test desktop, tablet, and mobile widths.
-- Identify what users may find annoying, confusing, crowded, hard to read, or hard to use.
-- Prioritize human-centered usability over adding new features.
-- Improve layout, hierarchy, spacing, scanability, and interaction clarity.
-- Keep all existing features working.
+- Fix Activity Planner activity buttons so all activities are visible.
+- Activity buttons should wrap to a second line gracefully if they cannot fit.
+- Photography and Stargazing must not be clipped or hidden.
+- Fix search dropdown background so results are readable.
+- Search dropdown must appear above the weather panel and globe.
+- Search dropdown should have an opaque or near-opaque glass background.
+- Keep search autocomplete/cache working.
+- Keep saved places working.
+- Keep current weather working.
+- Keep air quality working.
+- Keep 3D globe working.
+- Keep selected location marker working.
+- Keep day/night lighting working.
+- Keep Life Score working.
+- Keep Weather Translator working.
+- Keep Timeline Story working.
+- Keep Activity Planner logic working.
+- Do not add the pin tool yet.
+- Do not add logos/favicon yet.
 - Do not install packages.
 - Do not delete files.
-- Do not change package.json.
-- Do not change API logic unless fixing a clear UI-related bug.
 - Do not deploy.
 - Do not run git commands.
 
-## UX focus areas
+## Files likely to edit
 
-- First impression
-- Search usability
-- Current weather readability
-- Globe usefulness and size
-- Weather panel organization
-- Too much scrolling
-- Card hierarchy
-- Mobile usability
-- Tablet usability
-- Desktop usability
-- Accessibility and readable text sizes
-- Loading, empty, and error states
-- Whether the app feels human-centered instead of data-heavy
+- src/components/ActivityPlanner.tsx
+- src/components/SearchBar.tsx
+- src/components/WeatherPanel.tsx if needed
+- src/index.css if needed
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Browser testing is completed
-- Issues are documented
-- The highest-impact UI/UX improvements are implemented
-- Existing features still work
+- Activity buttons wrap cleanly
+- Walk, Run, Bike, Drive, Photography, and Stargazing are all visible
+- Search dropdown results are readable
+- Search dropdown is not transparent over the weather panel
+- Existing dashboard features still work
