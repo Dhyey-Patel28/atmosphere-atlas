@@ -38,6 +38,35 @@ Do not use:
 - Databases
 - AI API calls inside the app
 
+## Current Development Priority
+
+The app already has the core MVP features:
+
+- Search
+- Current weather
+- Air quality
+- 3D globe
+- Selected location marker
+- Day/night lighting
+- Life Score
+- Weather Translator
+- Timeline Story
+- Activity Planner
+
+The current priority is no longer building the first MVP from scratch.
+
+Current priorities:
+
+1. Search autocomplete and local cache
+2. Recent selected locations
+3. Saved Places
+4. Small layout fixes
+5. Performance optimization
+6. Today vs Last Year
+7. Deployment prep
+
+Avoid broad refactors unless explicitly requested.
+
 ## Current App Goal
 
 Build a polished MVP with:
@@ -83,6 +112,34 @@ After editing code:
 2. Tell me how to test it.
 3. Tell me which command to run.
 4. Mention any known limitations.
+
+## Change Size Rules
+
+Default to small, focused changes.
+
+Do not perform broad refactors unless the user explicitly says:
+
+- "broad refactor approved"
+- "rewrite the layout"
+- "full redesign approved"
+
+For normal tasks:
+
+- Touch as few files as possible.
+- Keep logic changes separate from styling changes.
+- Keep UI changes separate from API changes.
+- Do not change working features while improving unrelated areas.
+- Do not rewrite large components unless necessary.
+- Do not make more than one major product change in a single task.
+
+If a task seems to require more than 5 files, stop and ask for confirmation before editing.
+
+Do not combine:
+
+- layout refactor + API changes
+- search changes + weather panel redesign
+- globe changes + activity planner changes
+- performance optimization + feature work
 
 ## Safety Rules
 
@@ -182,6 +239,27 @@ Always handle:
 - missing API fields
 - no search results
 - network failure
+
+## Search UX Rules
+
+Search should feel fast and forgiving.
+
+Preferred search behavior:
+
+- Show suggestions while the user types.
+- Use debounce before calling geocoding.
+- Only search when query length is at least 3 characters.
+- Keep Enter-to-search working.
+- Use Open-Meteo Geocoding as the source of truth.
+- Do not preload a giant global city database.
+- Do not add paid search APIs.
+- Cache previous query results in localStorage.
+- Store recent selected locations in localStorage.
+- Prevent duplicate recent locations.
+- Keep dropdown above other layout elements.
+- Keep mobile search usable.
+
+Do not add fuzzy-search libraries unless explicitly approved.
 
 ## Recommended File Structure
 
