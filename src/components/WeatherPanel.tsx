@@ -1,5 +1,7 @@
 import type { Location, WeatherData } from '../types/weather';
 import { getWeatherDescription } from '../lib/weatherText';
+import { calculateLifeScore } from '../lib/weatherScore';
+import { LifeScoreCard } from './LifeScoreCard';
 
 interface WeatherPanelProps {
   location: Location | null;
@@ -94,7 +96,7 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
             </div>
 
             {/* Sun Cycle */}
-            <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex justify-between items-center mt-2">
+            <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex justify-between items-center mt-1">
                <div className="flex flex-col gap-1">
                  <span className="text-white/40 text-xs uppercase tracking-wider">Sunrise</span>
                  <span className="text-white font-medium">
@@ -109,6 +111,9 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
                  </span>
                </div>
             </div>
+
+            {/* Life Score */}
+            <LifeScoreCard {...calculateLifeScore(weather.current)} />
           </>
         )}
       </div>
