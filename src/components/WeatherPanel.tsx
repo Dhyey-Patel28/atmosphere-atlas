@@ -1,7 +1,8 @@
 import type { Location, WeatherData } from '../types/weather';
-import { getWeatherDescription } from '../lib/weatherText';
+import { getWeatherDescription, getWeatherAdvice } from '../lib/weatherText';
 import { calculateLifeScore } from '../lib/weatherScore';
 import { LifeScoreCard } from './LifeScoreCard';
+import { WeatherAdviceCard } from './WeatherAdviceCard';
 
 interface WeatherPanelProps {
   location: Location | null;
@@ -114,6 +115,9 @@ export function WeatherPanel({ location, weather, isLoading, error }: WeatherPan
 
             {/* Life Score */}
             <LifeScoreCard {...calculateLifeScore(weather.current)} />
+
+            {/* Weather Translator Advice */}
+            <WeatherAdviceCard advice={getWeatherAdvice(weather.current)} />
           </>
         )}
       </div>
