@@ -2,46 +2,36 @@
 
 ## Task
 
-Optimize performance by lazy-loading the globe.
+Add app logo and favicon.
 
 ## Goal
 
-Reduce the initial app bundle size by loading the heavy 3D globe code only when needed.
+Use the finalized Atmosphere Atlas logo assets in the browser tab and app header.
 
 ## Requirements
 
-- Use React lazy/Suspense or a small equivalent approach.
-- Lazy-load GlobeView so react-globe.gl and three are split out of the initial bundle if Vite supports it.
-- Add a polished globe loading fallback.
-- Keep the current visual layout stable while GlobeView loads.
-- Keep selected location marker working.
-- Keep day/night globe lighting working.
-- Keep mobile globe scroll behavior working.
-- Keep search autocomplete/cache working.
-- Keep saved places working.
-- Keep current weather working.
-- Keep air quality working.
-- Keep Life Score working.
-- Keep Weather Translator working.
-- Keep Timeline Story working.
-- Keep Activity Planner working.
-- Keep Today vs Last Year working.
+- Use the logo assets already added to the public folder.
+- Update index.html favicon/app icon links.
+- Add the app icon beside the Atmosphere Atlas header text.
+- Keep the header compact and responsive.
+- Do not make the header taller or cluttered.
+- Do not change app logic.
+- Do not change API logic.
 - Do not install packages.
 - Do not delete files.
 - Do not deploy yet.
-- Do not run git commands.
+- Keep npm run build working.
 
 ## Files likely to edit
 
+- index.html
 - src/App.tsx
-- src/components/GlobeView.tsx if needed
+- README.md only if useful
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Globe still renders
-- Globe marker still works
-- Day/night lighting still works
-- Build output shows globe code split into a separate chunk if possible
+- Browser tab shows the favicon
+- Header shows the logo cleanly
 - Existing dashboard features still work

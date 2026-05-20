@@ -90,7 +90,12 @@ function App() {
       <header className="relative z-50 w-full border-b border-white/5 bg-slate-950/40 backdrop-blur-xl shrink-0">
         <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Logo */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img 
+              src="/logo-mark-256.png" 
+              alt="Atmosphere Atlas Logo" 
+              className="w-5 h-5 md:w-6 md:h-6 object-contain" 
+            />
             <h1 className="text-sm md:text-base font-black tracking-[0.25em] text-white/90 uppercase whitespace-nowrap bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
               ATMOSPHERE ATLAS
             </h1>
