@@ -18,12 +18,11 @@ The core MVP features are implemented:
 
 Current focus:
 
-- Search autocomplete and local cache
-- Recent selected locations
-- Saved Places
 - UI polish in small, safe passes
 - Performance optimization
-- Deployment
+- Logo/favicon
+- Deployment prep
+- Pin tool later
 
 ## MVP Phase
 
@@ -242,7 +241,7 @@ Includes:
 - Simple explanation
 
 Status:
-Not started
+Done
 
 ---
 
