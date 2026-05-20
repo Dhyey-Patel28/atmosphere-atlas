@@ -8,6 +8,7 @@ import { WeatherAdviceCard } from './WeatherAdviceCard';
 import { TimelineStory } from './TimelineStory';
 import { ActivityPlanner } from './ActivityPlanner';
 import { AirQualityCard } from './AirQualityCard';
+import { WeatherMemoryCard } from './WeatherMemoryCard';
 
 // ── Collapsible section wrapper ─────────────────────────────────────────────
 function Section({
@@ -316,6 +317,18 @@ export function WeatherPanel({
               <Section title="Air Quality" defaultOpen={false}>
                 <AirQualityCard airQuality={airQuality} isLoading={isAqLoading} error={aqError} />
               </Section>
+
+              {location && (
+                <Section title="Today vs Last Year" defaultOpen={false}>
+                  <WeatherMemoryCard
+                    latitude={location.latitude}
+                    longitude={location.longitude}
+                    todayTempMax={weather.daily.temperature_2m_max[0]}
+                    todayPrecip={weather.daily.precipitation_sum?.[0] ?? 0}
+                    todayDateStr={weather.daily.time[0]}
+                  />
+                </Section>
+              )}
 
             </div>
 

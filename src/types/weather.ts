@@ -25,6 +25,7 @@ export interface DailyWeather {
   temperature_2m_min: number[];
   sunrise: string[];
   sunset: string[];
+  precipitation_sum?: number[];
 }
 
 export interface HourlyWeather {
