@@ -2,20 +2,30 @@
 
 ## Task
 
-Fix UX polish issues after dashboard redesign.
+Build Today vs Last Year weather memory.
 
 ## Goal
 
-Fix small but important usability problems introduced or revealed by the latest UI polish pass.
+Compare today’s weather for the selected location with the same date last year using Open-Meteo historical weather.
 
 ## Requirements
 
-- Fix Activity Planner activity buttons so all activities are visible.
-- Activity buttons should wrap to a second line gracefully if they cannot fit.
-- Photography and Stargazing must not be clipped or hidden.
-- Fix search dropdown background so results are readable.
-- Search dropdown must appear above the weather panel and globe.
-- Search dropdown should have an opaque or near-opaque glass background.
+- Use selected location from app state.
+- Use Open-Meteo Historical Weather API.
+- Do not use API keys.
+- Do not install packages.
+- Fetch historical weather only after a location is selected.
+- Compare today’s forecast/current conditions with the same calendar date last year.
+- Display:
+  - today’s high temperature
+  - last year’s high temperature
+  - temperature difference
+  - today’s precipitation if available
+  - last year’s precipitation if available
+  - short human-readable explanation
+- Create a WeatherMemoryCard component.
+- Keep the card compact.
+- Add it to the weather panel as a collapsible or secondary section.
 - Keep search autocomplete/cache working.
 - Keep saved places working.
 - Keep current weather working.
@@ -26,27 +36,24 @@ Fix small but important usability problems introduced or revealed by the latest 
 - Keep Life Score working.
 - Keep Weather Translator working.
 - Keep Timeline Story working.
-- Keep Activity Planner logic working.
-- Do not add the pin tool yet.
-- Do not add logos/favicon yet.
-- Do not install packages.
-- Do not delete files.
+- Keep Activity Planner working.
+- Do not change layout broadly.
 - Do not deploy.
-- Do not run git commands.
+- Do not delete files.
 
 ## Files likely to edit
 
-- src/components/ActivityPlanner.tsx
-- src/components/SearchBar.tsx
-- src/components/WeatherPanel.tsx if needed
-- src/index.css if needed
+- src/components/WeatherMemoryCard.tsx
+- src/lib/openMeteo.ts
+- src/types/weather.ts
+- src/components/WeatherPanel.tsx
+- src/App.tsx
 
 ## Done when
 
 - npm run dev works
 - npm run build works
-- Activity buttons wrap cleanly
-- Walk, Run, Bike, Drive, Photography, and Stargazing are all visible
-- Search dropdown results are readable
-- Search dropdown is not transparent over the weather panel
+- Selecting a city fetches historical comparison
+- Weather memory card appears
+- Explanation is human-readable
 - Existing dashboard features still work
