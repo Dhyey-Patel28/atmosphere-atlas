@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { WeatherPanel } from './components/WeatherPanel';
-import { GlobeView } from './components/GlobeView';
 import { SavedPlaces, loadSavedPlaces, persistSavedPlaces } from './components/SavedPlaces';
 import { fetchWeather, fetchAirQuality } from './lib/openMeteo';
 import type { Location, WeatherData, AirQualityData } from './types/weather';
+
+const GlobeView = lazy(() =>
+  import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
+);
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -122,9 +125,16 @@ function App() {
           <div className="relative flex-none xl:flex-1 flex flex-col rounded-[2rem] overflow-hidden bg-slate-900/10 border border-white/5 shadow-2xl backdrop-blur-sm
                           h-[45vw] max-h-[300px]
                           xl:h-full xl:max-h-none xl:min-h-0">
-            <GlobeView location={selectedLocation} />
+            <Suspense fallback={
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/20 backdrop-blur-sm">
+                <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-3" />
+                <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold">Initializing Globe System...</p>
+              </div>
+            }>
+              <GlobeView location={selectedLocation} />
+            </Suspense>
             {!selectedLocation && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                 <p className="text-white/50 text-sm md:text-base tracking-widest font-light
                                bg-slate-950/60 px-5 py-2.5 rounded-full backdrop-blur-md
                                border border-white/10 animate-pulse uppercase">
