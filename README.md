@@ -2,7 +2,7 @@
 
 **Atmosphere Atlas** is a futuristic weather intelligence dashboard that helps people understand how weather affects real life.
 
-It combines live weather data, air quality, an interactive 3D globe, day/night lighting, comfort scoring, activity recommendations, and historical comparison into one human-centered weather experience.
+It combines live weather data, air quality, an interactive 3D globe, day/night lighting, comfort scoring, activity recommendations, saved places, and shareable weather pins into one human-centered weather experience.
 
 ## 🔗 Live Demo
 
@@ -28,6 +28,11 @@ It combines live weather data, air quality, an interactive 3D globe, day/night l
 - Save up to 10 favorite places.
 - Quickly switch between saved locations.
 - Saved places persist after refresh using localStorage.
+
+### 📍 Drop Pin Weather Lookup
+- Drop a pin on the globe to fetch weather for exact coordinates.
+- Shared links use compact coordinate URLs like `?loc=42.3314,-83.0458`.
+- Opening a shared link loads weather for that coordinate automatically.
 
 ### 🌦️ Current Weather
 - View current temperature, apparent temperature, humidity, wind, precipitation, and condition labels.
@@ -93,7 +98,6 @@ Atmosphere Atlas uses free, keyless Open-Meteo APIs:
 | Open-Meteo Geocoding API | Location search |
 | Open-Meteo Forecast API | Current, daily, and hourly weather |
 | Open-Meteo Air Quality API | AQI, PM2.5, PM10, ozone |
-| Open-Meteo Historical Weather API | Today vs last year comparison |
 
 No API keys, paid services, backend servers, or user accounts are required.
 
@@ -106,7 +110,7 @@ Clone the repository:
 ```bash
 git clone https://github.com/Dhyey-Patel28/atmosphere-atlas.git
 cd atmosphere-atlas
-````
+```
 
 Install dependencies:
 
@@ -142,12 +146,12 @@ Atmosphere Atlas is deployed on Vercel:
 
 Deployment settings:
 
-| Setting          | Value           |
-| ---------------- | --------------- |
-| Framework Preset | Vite            |
-| Build Command    | `npm run build` |
-| Output Directory | `dist`          |
-| Install Command  | `npm install`   |
+| Setting | Value |
+|---|---|
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
 
 ---
 
@@ -155,19 +159,22 @@ Deployment settings:
 
 Before pushing major changes, verify:
 
-* `npm run build` completes successfully.
-* Search autocomplete works.
-* Weather data loads after selecting a location.
-* Globe loads and marker moves to the selected place.
-* Day/night lighting appears on the globe.
-* Saved places persist after refresh.
-* Life Score appears.
-* Weather Translator appears.
-* Timeline Story appears.
-* Activity Planner buttons are visible and usable.
-* Air Quality card loads.
-* Mobile scrolling works naturally.
-* Search dropdown remains readable above the layout.
+- `npm run build` completes successfully.
+- Search autocomplete works.
+- Search dropdown closes after selecting a location.
+- Weather data loads after selecting a location.
+- Globe loads and marker moves to the selected place.
+- Shared `?loc=lat,lon` links load weather and focus the globe.
+- Drop pin creates a pinned weather location.
+- Day/night lighting appears on the globe.
+- Saved places persist after refresh.
+- Life Score appears.
+- Weather Translator appears.
+- Timeline Story appears.
+- Activity Planner buttons are visible and usable.
+- Air Quality card loads.
+- Mobile scrolling works naturally when pin mode is off.
+- Search dropdown remains readable above the layout.
 
 ---
 
@@ -184,7 +191,6 @@ src/
     SearchBar.tsx
     TimelineStory.tsx
     WeatherAdviceCard.tsx
-    WeatherMemoryCard.tsx
     WeatherPanel.tsx
 
   lib/
@@ -211,11 +217,11 @@ Atmosphere Atlas is designed to feel less like a traditional weather app and mor
 
 The goal is not only to show weather data, but to explain:
 
-* how it feels outside,
-* what it means for daily life,
-* what activities make sense,
-* how daylight changes through the day,
-* and how the selected place fits into the larger planet.
+- how it feels outside,
+- what it means for daily life,
+- what activities make sense,
+- how daylight changes through the day,
+- and how the selected place fits into the larger planet.
 
 ---
 
@@ -223,26 +229,16 @@ The goal is not only to show weather data, but to explain:
 
 Potential next improvements:
 
-* Drop-a-pin globe weather lookup
-* Better nearest-city detection for arbitrary coordinates
-* Weather-based background ambience
-* Shareable location links
-* More detailed historical comparisons
-* True SVG logo refinement
-* More advanced accessibility pass
-* PWA install support
-* Stable Today vs Last Year comparison using historical weather data
+- Stable Today vs Last Year comparison using historical weather data
+- Weather-based background ambience
+- More advanced accessibility pass
+- PWA install polish
+- Optional nearby-city labels for dropped pins
+- More detailed activity explanations
+- More refined SVG logo system
 
 ---
 
 ## 📄 License
 
 This project is currently maintained as a personal portfolio project.
-
-Then run:
-
-```powershell
-git add README.md
-git commit -m "Add live demo link to README"
-git push
-````

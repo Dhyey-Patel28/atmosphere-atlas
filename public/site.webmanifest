@@ -1,19 +1,31 @@
 {
   "name": "Atmosphere Atlas",
-  "short_name": "Atmosphere Atlas",
+  "short_name": "Atlas",
+  "description": "A futuristic weather intelligence dashboard with a 3D globe, live weather, air quality, activity planning, daylight tracking, saved places, and shareable weather pins.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#020617",
+  "background_color": "#020617",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ],
-  "theme_color": "#020617",
-  "background_color": "#020617",
-  "display": "standalone"
+  ]
 }
