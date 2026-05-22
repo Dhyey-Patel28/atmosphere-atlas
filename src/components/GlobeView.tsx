@@ -36,6 +36,14 @@ type MarkerData = {
   name: string;
 };
 
+const DEFAULT_VIEW = {
+  lat: 20,
+  lng: 0,
+  altitude: 2.5,
+};
+
+const LOCATION_VIEW_ALTITUDE = 1.5;
+
 export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeViewProps) {
   const globeEl = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,9 +64,16 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
     };
 
     updateDimensions();
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(containerRef.current);
+
     window.addEventListener('resize', updateDimensions);
 
-    return () => window.removeEventListener('resize', updateDimensions);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateDimensions);
+    };
   }, []);
 
   useEffect(() => {
@@ -100,33 +115,52 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
     const timeoutId = window.setTimeout(applyLighting, 200);
 
     return () => window.clearTimeout(timeoutId);
-  }, [sunPos, dimensions.width]);
+  }, [sunPos, dimensions.width, dimensions.height]);
 
   useEffect(() => {
-    if (location && globeEl.current) {
-      globeEl.current.pointOfView(
-        {
-          lat: location.latitude,
-          lng: location.longitude,
-          altitude: 1.5,
-        },
-        1500
-      );
+    let cancelled = false;
+    const timeouts: number[] = [];
 
-      return;
+    function focusGlobeOnLocation(attempt = 0) {
+      if (cancelled) return;
+
+      const globe = globeEl.current;
+
+      if (!globe) {
+        if (attempt < 12) {
+          const timeoutId = window.setTimeout(() => focusGlobeOnLocation(attempt + 1), 150);
+          timeouts.push(timeoutId);
+        }
+
+        return;
+      }
+
+      if (location) {
+        globe.pointOfView(
+          {
+            lat: location.latitude,
+            lng: location.longitude,
+            altitude: LOCATION_VIEW_ALTITUDE,
+          },
+          attempt === 0 ? 1500 : 900
+        );
+
+        return;
+      }
+
+      globe.pointOfView(DEFAULT_VIEW, attempt === 0 ? 1500 : 900);
     }
 
-    if (!location && globeEl.current) {
-      globeEl.current.pointOfView(
-        {
-          lat: 20,
-          lng: 0,
-          altitude: 2.5,
-        },
-        1500
-      );
+    if (dimensions.width > 0 && dimensions.height > 0) {
+      const timeoutId = window.setTimeout(() => focusGlobeOnLocation(), 100);
+      timeouts.push(timeoutId);
     }
-  }, [location]);
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    };
+  }, [location, dimensions.width, dimensions.height]);
 
   const locationMarker: MarkerData | null = location
     ? {
