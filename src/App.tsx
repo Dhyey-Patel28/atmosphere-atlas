@@ -9,6 +9,93 @@ const GlobeView = lazy(() =>
   import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
 );
 
+function formatCoordinate(value: number): string {
+  return value.toFixed(4).replace(/\.?0+$/, '');
+}
+
+function buildCoordinateId(latitude: number, longitude: number): number {
+  return -Math.abs(Math.round((latitude + 90) * 100000 + (longitude + 180) * 1000));
+}
+
+function buildCoordinateLabel(latitude: number, longitude: number): string {
+  return `${formatCoordinate(latitude)}°, ${formatCoordinate(longitude)}°`;
+}
+
+function parseLocationParam(rawValue: string | null): Location | null {
+  if (!rawValue) return null;
+
+  const [rawLat, rawLon] = rawValue.split(',');
+  const latitude = Number(rawLat);
+  const longitude = Number(rawLon);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+
+  return {
+    id: buildCoordinateId(latitude, longitude),
+    name: 'Shared location',
+    latitude,
+    longitude,
+    admin1: 'Shared coordinates',
+    country: buildCoordinateLabel(latitude, longitude),
+    isPinned: true,
+  };
+}
+
+function parseSharedLocationFromUrl(): Location | null {
+  const params = new URLSearchParams(window.location.search);
+
+  const compactLocation = parseLocationParam(params.get('loc'));
+
+  if (compactLocation) {
+    return compactLocation;
+  }
+
+  // Backward compatibility for older compact share URLs.
+  const oldCompactLocation = parseLocationParam(params.get('at'));
+
+  if (oldCompactLocation) {
+    return oldCompactLocation;
+  }
+
+  // Backward compatibility for older verbose share URLs.
+  const rawLat = params.get('lat');
+  const rawLon = params.get('lon');
+
+  if (rawLat && rawLon) {
+    const latitude = Number(rawLat);
+    const longitude = Number(rawLon);
+
+    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+      return {
+        id: buildCoordinateId(latitude, longitude),
+        name: params.get('name') || 'Shared location',
+        latitude,
+        longitude,
+        admin1: params.get('admin1') || 'Shared coordinates',
+        country:
+          params.get('country') ||
+          buildCoordinateLabel(latitude, longitude),
+        isPinned: params.get('pinned') === 'true',
+      };
+    }
+  }
+
+  return null;
+}
+
+function buildShareUrl(location: Location): string {
+  const latitude = formatCoordinate(location.latitude);
+  const longitude = formatCoordinate(location.longitude);
+
+  return `${window.location.origin}${window.location.pathname}?loc=${latitude},${longitude}`;
+}
+
+function syncUrlToLocation(location: Location) {
+  const nextUrl = buildShareUrl(location);
+
+  window.history.replaceState(null, '', nextUrl);
+}
+
 function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -21,12 +108,15 @@ function App() {
 
   const [savedPlaces, setSavedPlaces] = useState<Location[]>(() => loadSavedPlaces());
   const [isPinMode, setIsPinMode] = useState(false);
+  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
 
   useEffect(() => {
     persistSavedPlaces(savedPlaces);
   }, [savedPlaces]);
 
-  function handleSelectLocation(location: Location) {
+  function handleSelectLocation(location: Location, options: { updateUrl?: boolean } = {}) {
+    const shouldUpdateUrl = options.updateUrl ?? true;
+
     setSelectedLocation({ ...location });
 
     setWeather(null);
@@ -36,6 +126,12 @@ function App() {
     setAirQuality(null);
     setAqError(null);
     setIsAqLoading(true);
+
+    setShareStatus('idle');
+
+    if (shouldUpdateUrl) {
+      syncUrlToLocation(location);
+    }
   }
 
   function handleSave() {
@@ -52,19 +148,58 @@ function App() {
   }
 
   function handlePinLocation(coords: { lat: number; lng: number }) {
+    const latitude = Number(coords.lat.toFixed(4));
+    const longitude = Number(coords.lng.toFixed(4));
+
     const pinnedLocation: Location = {
       id: -Date.now(),
       name: 'Pinned location',
-      latitude: Number(coords.lat.toFixed(4)),
-      longitude: Number(coords.lng.toFixed(4)),
+      latitude,
+      longitude,
       admin1: 'Dropped pin',
-      country: `${coords.lat.toFixed(2)}°, ${coords.lng.toFixed(2)}°`,
+      country: buildCoordinateLabel(latitude, longitude),
       isPinned: true,
     };
 
     handleSelectLocation(pinnedLocation);
     setIsPinMode(false);
   }
+
+  async function handleShareLocation() {
+    if (!selectedLocation) return;
+
+    const shareUrl = buildShareUrl(selectedLocation);
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareStatus('copied');
+
+      window.setTimeout(() => {
+        setShareStatus('idle');
+      }, 1800);
+    } catch {
+      setShareStatus('failed');
+
+      window.setTimeout(() => {
+        setShareStatus('idle');
+      }, 2200);
+    }
+  }
+
+  useEffect(() => {
+    const sharedLocation = parseSharedLocationFromUrl();
+
+    if (!sharedLocation) return;
+
+    const timeoutId = window.setTimeout(() => {
+      handleSelectLocation(sharedLocation);
+
+      // Normalize older verbose or ?at= URLs to the clean ?loc= format.
+      syncUrlToLocation(sharedLocation);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     if (!selectedLocation) return;
@@ -165,6 +300,26 @@ function App() {
               >
                 {isPinMode ? 'Cancel pin' : 'Drop pin'}
               </button>
+
+              {selectedLocation && (
+                <button
+                  type="button"
+                  onClick={handleShareLocation}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
+                    shareStatus === 'copied'
+                      ? 'border-emerald-300/60 bg-emerald-400/15 text-emerald-100'
+                      : shareStatus === 'failed'
+                        ? 'border-rose-300/60 bg-rose-400/15 text-rose-100'
+                        : 'border-white/15 bg-slate-950/60 text-white/70 hover:border-cyan-400/50 hover:text-cyan-100'
+                  }`}
+                >
+                  {shareStatus === 'copied'
+                    ? 'Copied'
+                    : shareStatus === 'failed'
+                      ? 'Copy failed'
+                      : 'Share'}
+                </button>
+              )}
             </div>
 
             {isPinMode && (

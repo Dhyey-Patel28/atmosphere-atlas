@@ -16,7 +16,7 @@ interface HistoricalData {
 
 type MemoryStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const ARCHIVE_TIMEOUT_MS = 12000;
+const ARCHIVE_TIMEOUT_MS = 30000;
 
 function getLastYearDate(dateStr: string): string {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -38,21 +38,38 @@ function getLastYearDate(dateStr: string): string {
 }
 
 function formatDate(dateStr: string): string {
-  try {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
+  const [year, month, day] = dateStr.split('-').map(Number);
 
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return dateStr;
-  }
+  if (!year || !month || !day) return dateStr;
+
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
-function buildExplanation(todayTempMax: number, todayPrecip: number, lastYearData: HistoricalData): string {
+function formatErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    const cause = error.cause;
+
+    if (cause instanceof Error && cause.message) {
+      return cause.message;
+    }
+
+    return error.message || 'Unable to load last year\'s weather memory.';
+  }
+
+  return 'Unable to load last year\'s weather memory.';
+}
+
+function buildExplanation(
+  todayTempMax: number,
+  todayPrecip: number,
+  lastYearData: HistoricalData
+): string {
   const tempDiff = todayTempMax - lastYearData.tempMax;
   const precipDiff = todayPrecip - lastYearData.precipitation;
 
@@ -65,12 +82,27 @@ function buildExplanation(todayTempMax: number, todayPrecip: number, lastYearDat
 
   const precipSentence =
     Math.abs(precipDiff) <= 0.1
-      ? `Precipitation is nearly unchanged between both days.`
+      ? 'Precipitation is nearly unchanged between both days.'
       : precipDiff > 0
         ? `It is also wetter today by ${precipDiff.toFixed(1)} mm.`
         : `It is drier today by ${Math.abs(precipDiff).toFixed(1)} mm.`;
 
   return `${tempSentence} ${precipSentence}`;
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error('The weather archive took too long to respond. Please try again.'));
+    }, timeoutMs);
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => {
+        window.clearTimeout(timeoutId);
+      });
+  });
 }
 
 export function WeatherMemoryCard({
@@ -90,51 +122,51 @@ export function WeatherMemoryCard({
   useEffect(() => {
     if (!lastYearDateStr || Number.isNaN(latitude) || Number.isNaN(longitude)) return;
 
-    const controller = new AbortController();
     let ignore = false;
 
-    // Schedule state updates instead of doing them synchronously in the effect body.
+    // Schedule the state updates outside the synchronous effect body.
     const requestId = window.setTimeout(() => {
       setStatus('loading');
       setError(null);
       setLastYearData(null);
 
-      const timeoutId = window.setTimeout(() => {
-        controller.abort();
-      }, ARCHIVE_TIMEOUT_MS);
-
-      fetchHistoricalWeather(latitude, longitude, lastYearDateStr, {
-        signal: controller.signal,
-      })
+      // Do not pass an AbortSignal here. React Strict Mode cleanup and timeout aborts
+      // can surface as "signal is aborted without reason" in the UI. The ignore flag
+      // below safely prevents stale requests from updating state after unmount/change.
+      withTimeout(
+        fetchHistoricalWeather(latitude, longitude, lastYearDateStr),
+        ARCHIVE_TIMEOUT_MS
+      )
         .then((data) => {
           if (ignore) return;
+
           setLastYearData(data);
           setStatus('success');
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           if (ignore) return;
-
-          const isAbortError = err instanceof DOMException && err.name === 'AbortError';
 
           setLastYearData(null);
           setStatus('error');
-          setError(
-            isAbortError
-              ? 'The weather archive took too long to respond. Please try again.'
-              : 'Unable to load last year\'s weather memory.'
-          );
-        })
-        .finally(() => {
-          window.clearTimeout(timeoutId);
+          setError(formatErrorMessage(err));
         });
     }, 0);
 
     return () => {
       ignore = true;
-      controller.abort();
       window.clearTimeout(requestId);
     };
   }, [latitude, longitude, lastYearDateStr, retryCount]);
+
+  if (!lastYearDateStr || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+    return (
+      <div className="text-center py-5 px-4 bg-white/5 border border-white/10 rounded-2xl">
+        <p className="text-white/45 text-xs">
+          Weather memory is unavailable for this location.
+        </p>
+      </div>
+    );
+  }
 
   if (status === 'loading' || status === 'idle') {
     return (
@@ -153,6 +185,9 @@ export function WeatherMemoryCard({
         <p className="text-rose-400 text-xs">
           {error || 'Historical weather memory is unavailable for this location.'}
         </p>
+        <p className="text-white/35 text-[10px] leading-relaxed max-w-xs">
+          Historical archive data may be temporarily unavailable. Retry, or choose a nearby city.
+        </p>
         <button
           type="button"
           onClick={() => setRetryCount((count) => count + 1)}
@@ -170,12 +205,12 @@ export function WeatherMemoryCard({
 
   return (
     <div className="flex flex-col gap-4 text-sm mt-1 bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all shadow-lg">
-      <div className="flex justify-between items-center text-[10px] text-white/50 border-b border-white/5 pb-2">
+      <div className="flex justify-between items-center text-[10px] text-white/50 border-b border-white/5 pb-2 gap-2">
         <div>
           <span className="text-cyan-400 font-semibold">LAST YEAR:</span>{' '}
           {formatDate(lastYearDateStr)}
         </div>
-        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500/30" />
+        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500/30 shrink-0" />
         <div>
           <span className="text-white/80 font-semibold">TODAY:</span> {formatDate(todayDateStr)}
         </div>
@@ -183,7 +218,7 @@ export function WeatherMemoryCard({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <span className="text-white/50 text-[10px] uppercase tracking-wider font-semibold">
               Peak Temp
             </span>
@@ -216,7 +251,7 @@ export function WeatherMemoryCard({
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <span className="text-white/50 text-[10px] uppercase tracking-wider font-semibold">
               Rain / Snow
             </span>

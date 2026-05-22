@@ -9,6 +9,14 @@ type FetchOptions = {
   signal?: AbortSignal;
 };
 
+type HistoricalApiResponse = {
+  daily?: {
+    temperature_2m_max?: Array<number | null>;
+    precipitation_sum?: Array<number | null>;
+  };
+  reason?: string;
+};
+
 async function fetchJson<T>(
   url: string,
   errorMessage: string,
@@ -17,7 +25,16 @@ async function fetchJson<T>(
   const res = await fetch(url, { signal: options.signal });
 
   if (!res.ok) {
-    throw new Error(`${errorMessage} (${res.status})`);
+    let details = '';
+
+    try {
+      const body = (await res.json()) as { reason?: string; error?: boolean };
+      details = body.reason ? `: ${body.reason}` : '';
+    } catch {
+      // If the API does not return JSON for an error, keep the status-only message.
+    }
+
+    throw new Error(`${errorMessage} (${res.status})${details}`);
   }
 
   return (await res.json()) as T;
@@ -71,12 +88,44 @@ export async function fetchAirQuality(lat: number, lon: number): Promise<AirQual
   }
 }
 
-type HistoricalApiResponse = {
-  daily?: {
-    temperature_2m_max?: Array<number | null>;
-    precipitation_sum?: Array<number | null>;
+function buildHistoricalUrl(baseUrl: string, lat: number, lon: number, dateStr: string): string {
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    start_date: dateStr,
+    end_date: dateStr,
+    daily: 'temperature_2m_max,precipitation_sum',
+    timezone: 'auto',
+  });
+
+  return `${baseUrl}?${params.toString()}`;
+}
+
+function parseHistoricalResponse(data: HistoricalApiResponse): HistoricalWeatherResult {
+  const tempMax = data.daily?.temperature_2m_max?.[0];
+
+  if (tempMax == null) {
+    throw new Error('No historical temperature data found for this location and date');
+  }
+
+  return {
+    tempMax,
+    precipitation: data.daily?.precipitation_sum?.[0] ?? 0,
   };
-};
+}
+
+async function fetchHistoricalFromUrl(
+  url: string,
+  options: FetchOptions = {}
+): Promise<HistoricalWeatherResult> {
+  const data = await fetchJson<HistoricalApiResponse>(
+    url,
+    'Historical weather response was not ok',
+    options
+  );
+
+  return parseHistoricalResponse(data);
+}
 
 export async function fetchHistoricalWeather(
   lat: number,
@@ -84,30 +133,33 @@ export async function fetchHistoricalWeather(
   dateStr: string,
   options: FetchOptions = {}
 ): Promise<HistoricalWeatherResult> {
-  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${dateStr}&end_date=${dateStr}&daily=temperature_2m_max,precipitation_sum&timezone=auto`;
+  const archiveUrl = buildHistoricalUrl(
+    'https://archive-api.open-meteo.com/v1/archive',
+    lat,
+    lon,
+    dateStr
+  );
+
+  const historicalForecastUrl = buildHistoricalUrl(
+    'https://historical-forecast-api.open-meteo.com/v1/forecast',
+    lat,
+    lon,
+    dateStr
+  );
 
   try {
-    const data = await fetchJson<HistoricalApiResponse>(
-      url,
-      'Historical weather response was not ok',
-      options
-    );
+    return await fetchHistoricalFromUrl(archiveUrl, options);
+  } catch (archiveError) {
+    console.warn('Archive API failed, trying historical forecast fallback:', archiveError);
 
-    const tempMax = data.daily?.temperature_2m_max?.[0];
+    try {
+      return await fetchHistoricalFromUrl(historicalForecastUrl, options);
+    } catch (fallbackError) {
+      console.error('Error fetching historical weather:', fallbackError);
 
-    if (tempMax == null) {
-      throw new Error('No historical temperature data found for this location and date');
+      throw new Error('Failed to fetch historical weather data', {
+        cause: fallbackError,
+      });
     }
-
-    return {
-      tempMax,
-      precipitation: data.daily?.precipitation_sum?.[0] ?? 0,
-    };
-  } catch (error) {
-    console.error('Error fetching historical weather:', error);
-
-    throw new Error('Failed to fetch historical weather data', {
-      cause: error,
-    });
   }
 }
