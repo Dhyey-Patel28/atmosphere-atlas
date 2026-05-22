@@ -241,7 +241,7 @@ Includes:
 - Simple explanation
 
 Status:
-Done
+Paused
 
 ---
 
