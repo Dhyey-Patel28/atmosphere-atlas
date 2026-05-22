@@ -70,10 +70,6 @@ It combines live weather data, air quality, an interactive 3D globe, day/night l
   - Ozone
 - Includes a simple health label and advice sentence.
 
-### 📅 Today vs Last Year
-- Compares today’s weather with the same calendar date last year.
-- Shows temperature and precipitation differences using historical weather data.
-
 ---
 
 ## 🛠️ Tech Stack
@@ -170,7 +166,6 @@ Before pushing major changes, verify:
 * Timeline Story appears.
 * Activity Planner buttons are visible and usable.
 * Air Quality card loads.
-* Today vs Last Year card loads.
 * Mobile scrolling works naturally.
 * Search dropdown remains readable above the layout.
 
@@ -236,6 +231,7 @@ Potential next improvements:
 * True SVG logo refinement
 * More advanced accessibility pass
 * PWA install support
+* Stable Today vs Last Year comparison using historical weather data
 
 ---
 
