@@ -5,6 +5,7 @@ export interface Location {
   longitude: number;
   country: string;
   admin1?: string;
+  isPinned?: boolean;
 }
 
 export interface CurrentWeather {
