@@ -1,84 +1,252 @@
 # 🌍 Atmosphere Atlas
 
-**Atmosphere Atlas** is a premium, futuristic weather intelligence dashboard that explains how weather affects real life. Combining real-time meteorological data with an interactive 3D globe, daylight mapping, and personalized activity metrics, Atmosphere Atlas gives users a high-fidelity window into our planet's atmosphere.
+**Atmosphere Atlas** is a futuristic weather intelligence dashboard that helps people understand how weather affects real life.
+
+It combines live weather data, air quality, an interactive 3D globe, day/night lighting, comfort scoring, activity recommendations, and historical comparison into one human-centered weather experience.
+
+## 🔗 Live Demo
+
+[https://atmosphere-atlas.vercel.app/](https://atmosphere-atlas.vercel.app/)
 
 ---
 
 ## ✨ Features
 
-- **🗺️ Interactive 3D Globe**: Visually trace chosen locations on a WebGL globe with real-time day/night lighting shadows and location pin markers.
-- **🔍 Fast Geocoding Search**: Forgiving autocomplete search query cache with debounced inputs and local storage querying.
-- **📌 Saved Places**: Add up to 10 favorite cities to a floating glassmorphic quick-access bar.
-- **📊 Life Score**: A smart scoring index that determines outdoor comfort levels using real-time humidity, temperature, wind, and conditions.
-- **🎭 Weather Translator**: Human-friendly summaries translating abstract weather metrics into daily lifestyle terms.
-- **☀️ Interactive Solar Arc**: A real-time SVG daylight mapping curve showing sunrise, sunset, and solar progression with an animated sun tracker.
-- **🏃 Activity Planner**: High-fidelity condition analyzer evaluating activities like Running, Cycling, Photography, Stargazing, Hiking, and Picnic.
-- **🎛️ Today vs Last Year**: Connects to the Historical Archive API to compare today's forecast with the exact same calendar date one year ago.
-- **⚡ Performance Code Splitting**: Utilizes React dynamic loading (`React.lazy` and `<Suspense>`) to extract heavy 3D globe bundles, reducing initial payload size by **88%** (from 2.07 MB down to 241 KB).
+### 🌐 Interactive 3D Globe
+- Explore locations on a WebGL-powered globe.
+- Selected places appear as glowing markers.
+- The globe includes dynamic day/night lighting based on estimated sun position.
+- The heavy globe bundle is lazy-loaded for better initial performance.
+
+### 🔍 Fast Location Search
+- Search locations using the Open-Meteo Geocoding API.
+- Debounced autocomplete suggestions appear while typing.
+- Search results are cached locally for faster repeat searches.
+- Recent searches are stored in localStorage.
+
+### 📌 Saved Places
+- Save up to 10 favorite places.
+- Quickly switch between saved locations.
+- Saved places persist after refresh using localStorage.
+
+### 🌦️ Current Weather
+- View current temperature, apparent temperature, humidity, wind, precipitation, and condition labels.
+- Includes daily high/low temperature, sunrise, and sunset.
+
+### ☀️ Solar Arc
+- Visual daylight arc showing sunrise, sunset, and current solar progression.
+- Helps users understand where they are in the day at the selected location.
+
+### 🧭 Life Score
+- A 0–100 outdoor comfort score.
+- Uses apparent temperature, humidity, wind, precipitation, and weather conditions.
+- Includes a plain-English explanation of why the score was given.
+
+### 🎭 Weather Translator
+- Turns raw weather data into practical guidance:
+  - Clothing
+  - Commute
+  - Outdoor activity
+  - Health and comfort
+
+### 🕒 Timeline Story
+- Creates a 12-hour weather story from hourly forecast data.
+- Highlights useful changes like temperature peaks, rain risk, wind shifts, and sunset.
+
+### 🏃 Activity Planner
+- Recommends the best time for:
+  - Walk
+  - Run
+  - Bike
+  - Drive
+  - Photography
+  - Stargazing
+
+### 🌫️ Air Quality
+- Displays air quality data including:
+  - US AQI
+  - PM2.5
+  - PM10
+  - Ozone
+- Includes a simple health label and advice sentence.
+
+### 📅 Today vs Last Year
+- Compares today’s weather with the same calendar date last year.
+- Shows temperature and precipitation differences using historical weather data.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18, Vite
+- **Framework**: React + Vite
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **Graphics**: Three.js, react-globe.gl
-- **State & Caching**: LocalStorage, React Context/Hooks
+- **3D Graphics**: Three.js + react-globe.gl
+- **Data**: Open-Meteo APIs
+- **Storage**: localStorage
+- **Deployment**: Vercel
 
 ---
 
 ## 📡 APIs Used
 
-All weather data is fetched in real-time using key-less, public **Open-Meteo APIs**:
-1. **Geocoding API**: `https://geocoding-api.open-meteo.com/v1/search`
-2. **Forecast API**: `https://api.open-meteo.com/v1/forecast`
-3. **Air Quality API**: `https://air-quality-api.open-meteo.com/v1/air-quality`
-4. **Historical Weather Archive API**: `https://archive-api.open-meteo.com/v1/archive`
+Atmosphere Atlas uses free, keyless Open-Meteo APIs:
+
+| API | Purpose |
+|---|---|
+| Open-Meteo Geocoding API | Location search |
+| Open-Meteo Forecast API | Current, daily, and hourly weather |
+| Open-Meteo Air Quality API | AQI, PM2.5, PM10, ozone |
+| Open-Meteo Historical Weather API | Today vs last year comparison |
+
+No API keys, paid services, backend servers, or user accounts are required.
 
 ---
 
 ## 🚀 Running Locally
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Dhyey-Patel28/atmosphere-atlas.git
-   cd atmosphere-atlas
-   ```
+Clone the repository:
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/Dhyey-Patel28/atmosphere-atlas.git
+cd atmosphere-atlas
+````
 
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
+Install dependencies:
 
-4. **Build for production**:
-   ```bash
-   npm run build
-   ```
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
 
 ---
 
-## 📦 Deployment Settings
+## 📦 Deployment
 
-Atmosphere Atlas is a fully client-side static site, which can be deployed to any static host.
+Atmosphere Atlas is deployed on Vercel:
 
-### 🔺 Vercel / 🟢 Netlify
-* **Build Command**: `npm run build`
-* **Output Directory**: `dist`
-* **SPA Routing**: 
-  - For Vercel, ensure a `vercel.json` exists or is configured to route all paths to `index.html`.
-  - For Netlify, add a `_redirects` file to the public folder containing `/* /index.html 200`.
+[https://atmosphere-atlas.vercel.app/](https://atmosphere-atlas.vercel.app/)
 
-### 🐙 GitHub Pages
-Since Vite builds relative paths by default, if deploying to a repository subdirectory (e.g. `username.github.io/atmosphere-atlas`), update `vite.config.ts` to include:
-```ts
-export default defineConfig({
-  base: '/atmosphere-atlas/',
-  plugins: [react()],
-})
+Deployment settings:
+
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Framework Preset | Vite            |
+| Build Command    | `npm run build` |
+| Output Directory | `dist`          |
+| Install Command  | `npm install`   |
+
+---
+
+## 🧪 QA Checklist
+
+Before pushing major changes, verify:
+
+* `npm run build` completes successfully.
+* Search autocomplete works.
+* Weather data loads after selecting a location.
+* Globe loads and marker moves to the selected place.
+* Day/night lighting appears on the globe.
+* Saved places persist after refresh.
+* Life Score appears.
+* Weather Translator appears.
+* Timeline Story appears.
+* Activity Planner buttons are visible and usable.
+* Air Quality card loads.
+* Today vs Last Year card loads.
+* Mobile scrolling works naturally.
+* Search dropdown remains readable above the layout.
+
+---
+
+## 📁 Project Structure
+
+```txt
+src/
+  components/
+    ActivityPlanner.tsx
+    AirQualityCard.tsx
+    GlobeView.tsx
+    LifeScoreCard.tsx
+    SavedPlaces.tsx
+    SearchBar.tsx
+    TimelineStory.tsx
+    WeatherAdviceCard.tsx
+    WeatherMemoryCard.tsx
+    WeatherPanel.tsx
+
+  lib/
+    activityPlanner.ts
+    openMeteo.ts
+    searchCache.ts
+    time.ts
+    timelineStory.ts
+    weatherScore.ts
+    weatherText.ts
+
+  types/
+    weather.ts
+
+  App.tsx
+  index.css
 ```
+
+---
+
+## 🧠 Design Philosophy
+
+Atmosphere Atlas is designed to feel less like a traditional weather app and more like a **living planet dashboard**.
+
+The goal is not only to show weather data, but to explain:
+
+* how it feels outside,
+* what it means for daily life,
+* what activities make sense,
+* how daylight changes through the day,
+* and how the selected place fits into the larger planet.
+
+---
+
+## 🗺️ Future Ideas
+
+Potential next improvements:
+
+* Drop-a-pin globe weather lookup
+* Better nearest-city detection for arbitrary coordinates
+* Weather-based background ambience
+* Shareable location links
+* More detailed historical comparisons
+* True SVG logo refinement
+* More advanced accessibility pass
+* PWA install support
+
+---
+
+## 📄 License
+
+This project is currently maintained as a personal portfolio project.
+
+Then run:
+
+```powershell
+git add README.md
+git commit -m "Add live demo link to README"
+git push
+````
