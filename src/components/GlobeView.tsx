@@ -6,8 +6,10 @@ import { getSunPosition } from '../lib/time';
 
 interface GlobeViewProps {
   location: Location | null;
+  savedPlaces?: Location[];
   isPinMode?: boolean;
   onPinLocation?: (coords: { lat: number; lng: number }) => void;
+  onSavedLocationSelect?: (location: Location) => void;
 }
 
 type GlobeClickCoords = {
@@ -30,10 +32,11 @@ type LightLike = {
 };
 
 type MarkerData = {
-  type: 'location' | 'sun';
+  type: 'location' | 'saved' | 'sun';
   lat: number;
   lng: number;
   name: string;
+  location?: Location;
 };
 
 const DEFAULT_VIEW = {
@@ -44,7 +47,21 @@ const DEFAULT_VIEW = {
 
 const LOCATION_VIEW_ALTITUDE = 1.5;
 
-export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeViewProps) {
+function getSavedMarkerLabel(location: Location): string {
+  if (location.name === 'Pinned spot') return 'Pinned spot';
+  if (location.name === 'Shared spot') return 'Shared spot';
+  if (location.name === 'Near me') return 'Near me';
+
+  return location.name;
+}
+
+export function GlobeView({
+  location,
+  savedPlaces = [],
+  isPinMode = false,
+  onPinLocation,
+  onSavedLocationSelect,
+}: GlobeViewProps) {
   const globeEl = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +185,17 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
     };
   }, [location, isPinMode, dimensions.width, dimensions.height]);
 
+  const savedMarkerData: MarkerData[] = savedPlaces
+    .filter((place) => place.id !== location?.id)
+    .slice(0, 10)
+    .map((place) => ({
+      type: 'saved',
+      lat: place.latitude,
+      lng: place.longitude,
+      name: getSavedMarkerLabel(place),
+      location: place,
+    }));
+
   const locationMarker: MarkerData | null = location
     ? {
         type: 'location',
@@ -184,7 +212,11 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
     name: 'Sun',
   };
 
-  const markerData: MarkerData[] = locationMarker ? [locationMarker, sunMarker] : [sunMarker];
+  const markerData: MarkerData[] = [
+    ...savedMarkerData,
+    ...(locationMarker ? [locationMarker] : []),
+    sunMarker,
+  ];
 
   return (
     <div
@@ -206,6 +238,39 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
           htmlElementsData={markerData}
           htmlElement={(data: object) => {
             const marker = data as MarkerData;
+
+            if (marker.type === 'saved') {
+              const el = document.createElement('button');
+              el.type = 'button';
+              el.title = `Open saved place: ${marker.name}`;
+              el.setAttribute('aria-label', `Open saved place: ${marker.name}`);
+              el.style.pointerEvents = isPinMode ? 'none' : 'auto';
+              el.className =
+                'relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/70 p-1 shadow-[0_0_18px_rgba(148,163,184,0.35)] backdrop-blur-md transition-transform hover:scale-125 hover:border-cyan-200/80 hover:bg-cyan-300/15';
+
+              el.innerHTML = `
+                <span class="block h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(255,255,255,0.55)]"></span>
+              `;
+
+              const selectSavedPlace = (event: Event) => {
+                event.stopPropagation();
+
+                if (isPinMode || !marker.location) return;
+
+                onSavedLocationSelect?.(marker.location);
+              };
+
+              el.addEventListener('click', selectSavedPlace);
+              el.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+
+                event.preventDefault();
+                selectSavedPlace(event);
+              });
+
+              return el;
+            }
+
             const el = document.createElement('div');
 
             if (marker.type === 'location') {

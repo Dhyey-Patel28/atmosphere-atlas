@@ -601,8 +601,10 @@ function App() {
             >
               <GlobeView
                 location={selectedLocation}
+                savedPlaces={savedPlaces}
                 isPinMode={isPinMode}
                 onPinLocation={handlePinLocation}
+                onSavedLocationSelect={handleSelectLocation}
               />
             </Suspense>
 
