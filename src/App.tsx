@@ -4,6 +4,9 @@ import { WeatherPanel } from './components/WeatherPanel';
 import { SavedPlaces, loadSavedPlaces, persistSavedPlaces } from './components/SavedPlaces';
 import { fetchWeather, fetchAirQuality } from './lib/openMeteo';
 import type { Location, WeatherData, AirQualityData } from './types/weather';
+import { getStoredTemperatureUnit, persistTemperatureUnit, toggleTemperatureUnit } from './lib/units';
+import type { TemperatureUnit } from './lib/units';
+import { getWeatherAmbience } from './lib/ambience';
 
 const GlobeView = lazy(() =>
   import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
@@ -109,10 +112,23 @@ function App() {
   const [savedPlaces, setSavedPlaces] = useState<Location[]>(() => loadSavedPlaces());
   const [isPinMode, setIsPinMode] = useState(false);
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>(() =>
+    getStoredTemperatureUnit()
+  );
+
+  const ambience = getWeatherAmbience(weather?.current ?? null);
 
   useEffect(() => {
     persistSavedPlaces(savedPlaces);
   }, [savedPlaces]);
+
+  useEffect(() => {
+    persistTemperatureUnit(temperatureUnit);
+  }, [temperatureUnit]);
+
+  function handleToggleTemperatureUnit() {
+    setTemperatureUnit((currentUnit: TemperatureUnit) => toggleTemperatureUnit(currentUnit));
+  }
 
   function handleSelectLocation(location: Location, options: { updateUrl?: boolean } = {}) {
     const shouldUpdateUrl = options.updateUrl ?? true;
@@ -246,7 +262,11 @@ function App() {
 
   return (
     <div className="relative w-full h-screen flex flex-col bg-slate-950 text-slate-100 font-sans overflow-hidden">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black z-0 pointer-events-none" />
+      <div
+        className="fixed inset-0 z-0 pointer-events-none transition-all duration-[1800ms] ease-in-out"
+        style={ambience.backgroundStyle}
+      />
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_30%)]" />
 
       <header className="relative z-50 w-full border-b border-white/5 bg-slate-950/40 backdrop-blur-xl shrink-0">
         <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -265,6 +285,16 @@ function App() {
             <div className="w-full md:max-w-xs lg:max-w-sm">
               <SearchBar onLocationSelect={handleSelectLocation} />
             </div>
+
+            <button
+              type="button"
+              onClick={handleToggleTemperatureUnit}
+              className="shrink-0 rounded-full border border-white/15 bg-slate-950/50 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/70 backdrop-blur-md transition-all hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100"
+              aria-label={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+              title={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+            >
+              °{temperatureUnit}
+            </button>
 
             {(savedPlaces.length > 0 || selectedLocation) && (
               <div className="flex items-center min-w-0">
@@ -367,6 +397,7 @@ function App() {
               airQuality={airQuality}
               isAqLoading={isAqLoading}
               aqError={aqError}
+              unit={temperatureUnit}
             />
           </div>
         </div>
