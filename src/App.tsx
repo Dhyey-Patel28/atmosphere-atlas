@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { WeatherPanel } from './components/WeatherPanel';
 import { SavedPlaces, loadSavedPlaces, persistSavedPlaces } from './components/SavedPlaces';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { fetchWeather, fetchAirQuality } from './lib/openMeteo';
 import type { Location, WeatherData, AirQualityData } from './types/weather';
 import { getStoredTemperatureUnit, persistTemperatureUnit, toggleTemperatureUnit } from './lib/units';
@@ -599,24 +600,40 @@ function App() {
               </div>
             )}
 
-            <Suspense
+            <ErrorBoundary
+              resetKey={`${selectedLocation?.id ?? 'empty'}-${isPinMode}`}
               fallback={
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/20 backdrop-blur-sm">
-                  <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-3" />
-                  <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold">
-                    Initializing Globe System...
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/30 px-6 text-center backdrop-blur-sm">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-400/10 text-cyan-200">
+                    !
+                  </div>
+                  <p className="text-sm font-bold text-white/85">The 3D globe could not load.</p>
+                  <p className="mt-2 max-w-xs text-xs leading-relaxed text-white/45">
+                    Weather data can still load from search, Near me, saved places, and shared links.
+                    Try refreshing if your browser supports WebGL.
                   </p>
                 </div>
               }
             >
-              <GlobeView
-                location={selectedLocation}
-                savedPlaces={savedPlaces}
-                isPinMode={isPinMode}
-                onPinLocation={handlePinLocation}
-                onSavedLocationSelect={handleSelectLocation}
-              />
-            </Suspense>
+              <Suspense
+                fallback={
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/20 backdrop-blur-sm">
+                    <div className="mb-3 h-8 w-8 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+                    <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold">
+                      Initializing Globe System...
+                    </p>
+                  </div>
+                }
+              >
+                <GlobeView
+                  location={selectedLocation}
+                  savedPlaces={savedPlaces}
+                  isPinMode={isPinMode}
+                  onPinLocation={handlePinLocation}
+                  onSavedLocationSelect={handleSelectLocation}
+                />
+              </Suspense>
+            </ErrorBoundary>
 
             {!selectedLocation && !isPinMode && (
               <div className="absolute inset-0 z-10 hidden md:flex items-center justify-center pointer-events-none px-4">
