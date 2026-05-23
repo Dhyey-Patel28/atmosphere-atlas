@@ -1,4 +1,6 @@
 import type { WeatherData } from '../types/weather';
+import type { TemperatureUnit } from '../lib/units';
+import { formatTemperatureCompact, formatWindSpeed } from '../lib/units';
 
 export interface TimelineEvent {
   id: string;
@@ -9,7 +11,7 @@ export interface TimelineEvent {
   iconType: 'peak' | 'drop' | 'rain' | 'wind' | 'sun' | 'info';
 }
 
-export function generateTimeline(weather: WeatherData): TimelineEvent[] {
+export function generateTimeline(weather: WeatherData, unit: TemperatureUnit = 'C'): TimelineEvent[] {
   const events: TimelineEvent[] = [];
   const hourly = weather.hourly;
   if (!hourly || !hourly.time || hourly.time.length === 0) return events;
@@ -72,7 +74,7 @@ export function generateTimeline(weather: WeatherData): TimelineEvent[] {
           timeLabel: "",
           timestamp: timeVal,
           title: "Wind Picking Up",
-          description: `Breezes strengthening to ${Math.round(wind)} km/h.`,
+          description: `Breezes strengthening to ${formatWindSpeed(wind, unit)}.`,
           iconType: 'wind'
         });
       }
@@ -100,7 +102,7 @@ export function generateTimeline(weather: WeatherData): TimelineEvent[] {
       timeLabel: "",
       timestamp: timeVal,
       title: "Temperature Peak",
-      description: `High point of the next 12 hours at ${Math.round(peakTemp)}°.`,
+      description: `High point of the next 12 hours at ${formatTemperatureCompact(peakTemp, unit)}.`,
       iconType: 'peak'
     });
 
@@ -112,7 +114,7 @@ export function generateTimeline(weather: WeatherData): TimelineEvent[] {
           timeLabel: "",
           timestamp: new Date(hourly.time[i]).getTime(),
           title: "Cooling Down",
-          description: `Temperature drops significantly to ${Math.round(hourly.temperature_2m[i])}°.`,
+          description: `Temperature drops significantly to ${formatTemperatureCompact(hourly.temperature_2m[i], unit)}.`,
           iconType: 'drop'
         });
         break; // Only capture the first significant drop
@@ -127,7 +129,7 @@ export function generateTimeline(weather: WeatherData): TimelineEvent[] {
         timeLabel: "",
         timestamp: new Date(hourly.time[startIndex]).getTime(),
         title: "Current Trend",
-        description: `Starting the period at ${Math.round(hourly.temperature_2m[startIndex])}°.`,
+        description: `Starting the period at ${formatTemperatureCompact(hourly.temperature_2m[startIndex], unit)}.`,
         iconType: 'info'
       });
       
@@ -137,7 +139,7 @@ export function generateTimeline(weather: WeatherData): TimelineEvent[] {
         timeLabel: "",
         timestamp: new Date(hourly.time[midIndex]).getTime(),
         title: "Midpoint Check",
-        description: `Continuing steady at ${Math.round(hourly.temperature_2m[midIndex])}°.`,
+        description: `Continuing steady at ${formatTemperatureCompact(hourly.temperature_2m[midIndex], unit)}.`,
         iconType: 'info'
       });
   }

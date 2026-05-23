@@ -8,6 +8,8 @@ import { WeatherAdviceCard } from './WeatherAdviceCard';
 import { TimelineStory } from './TimelineStory';
 import { ActivityPlanner } from './ActivityPlanner';
 import { AirQualityCard } from './AirQualityCard';
+import type { TemperatureUnit } from '../lib/units';
+import { formatTemperature, formatTemperatureCompact, formatWindSpeed, formatPrecipitation } from '../lib/units';
 
 // ── Collapsible section wrapper ─────────────────────────────────────────────
 function Section({
@@ -55,6 +57,7 @@ interface WeatherPanelProps {
   airQuality: AirQualityData | null;
   isAqLoading: boolean;
   aqError: string | null;
+  unit: TemperatureUnit;
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -66,6 +69,7 @@ export function WeatherPanel({
   airQuality,
   isAqLoading,
   aqError,
+  unit,
 }: WeatherPanelProps) {
 
   // ── Empty placeholder ──────────────────────────────────────────────────────
@@ -161,12 +165,12 @@ export function WeatherPanel({
             {/* ── Temperature hero ────────────────────────────────────────── */}
             <div className="flex items-baseline gap-4 pb-5 pt-2">
               <span className="text-7xl font-thin text-white tracking-tighter leading-none bg-gradient-to-br from-white via-white to-white/70 bg-clip-text text-transparent">
-                {Math.round(weather.current.temperature_2m)}°
+                {formatTemperatureCompact(weather.current.temperature_2m, unit)}
               </span>
               <div className="flex flex-col gap-0.5">
                 <span className="text-white/45 text-[10px] uppercase tracking-widest font-bold">Feels like</span>
                 <span className="text-cyan-400 font-extrabold text-2xl tracking-tight">
-                  {Math.round(weather.current.apparent_temperature)}°
+                  {formatTemperatureCompact(weather.current.apparent_temperature, unit)}
                 </span>
               </div>
             </div>
@@ -185,7 +189,7 @@ export function WeatherPanel({
                 },
                 { 
                   label: 'Wind Speed', 
-                  value: `${weather.current.wind_speed_10m} km/h`, 
+                  value: formatWindSpeed(weather.current.wind_speed_10m, unit), 
                   icon: (
                     <svg className="w-3.5 h-3.5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5h16.5M3.75 4.5h16.5m-16.5 4.5h16.5m-16.5 9h16.5" />
@@ -194,7 +198,7 @@ export function WeatherPanel({
                 },
                 {
                   label: 'High / Low',
-                  value: `${Math.round(weather.daily.temperature_2m_max[0])}° / ${Math.round(weather.daily.temperature_2m_min[0])}°`,
+                  value: `${formatTemperatureCompact(weather.daily.temperature_2m_max[0], unit)} / ${formatTemperature(weather.daily.temperature_2m_min[0], unit)}`,
                   icon: (
                     <svg className="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m9-5.25L12 16.5m0 0l-4.5-4.5M12 16.5V3" />
@@ -203,7 +207,7 @@ export function WeatherPanel({
                 },
                 { 
                   label: 'Precipitation', 
-                  value: `${weather.current.precipitation} mm`, 
+                  value: formatPrecipitation(weather.current.precipitation, unit), 
                   icon: (
                     <svg className="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.02 12.02l.707-.707" />
@@ -306,11 +310,11 @@ export function WeatherPanel({
               </Section>
 
               <Section title="12-Hour Story" defaultOpen={false}>
-                <TimelineStory events={generateTimeline(weather)} />
+                <TimelineStory events={generateTimeline(weather, unit)} />
               </Section>
 
               <Section title="Activity Planner" defaultOpen={false}>
-                <ActivityPlanner weather={weather} />
+                <ActivityPlanner weather={weather} unit={unit} />
               </Section>
 
               <Section title="Air Quality" defaultOpen={false}>

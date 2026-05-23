@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import type { WeatherData } from '../types/weather';
+import type { TemperatureUnit } from '../lib/units';
 import { getBestActivityTime, type ActivityType } from '../lib/activityPlanner';
 
 const ACTIVITIES: ActivityType[] = ['Walk', 'Run', 'Bike', 'Drive', 'Photography', 'Stargazing'];
 
 interface ActivityPlannerProps {
   weather: WeatherData;
+  unit: TemperatureUnit;
 }
 
-export function ActivityPlanner({ weather }: ActivityPlannerProps) {
+export function ActivityPlanner({ weather, unit }: ActivityPlannerProps) {
   const [selected, setSelected] = useState<ActivityType>('Walk');
 
-  const recommendation = getBestActivityTime(selected, weather);
+  const recommendation = getBestActivityTime(selected, weather, unit);
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 relative overflow-hidden transition-all hover:bg-white/10 mt-1 shadow-lg">

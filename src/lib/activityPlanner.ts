@@ -1,4 +1,6 @@
 import type { WeatherData } from '../types/weather';
+import type { TemperatureUnit } from '../lib/units';
+import { formatTemperatureCompact, formatWindSpeed } from '../lib/units';
 
 export type ActivityType = 'Walk' | 'Run' | 'Bike' | 'Drive' | 'Photography' | 'Stargazing';
 
@@ -8,7 +10,11 @@ export interface ActivityRecommendation {
   reason: string;
 }
 
-export function getBestActivityTime(activity: ActivityType, weather: WeatherData): ActivityRecommendation {
+export function getBestActivityTime(
+  activity: ActivityType,
+  weather: WeatherData,
+  unit: TemperatureUnit = 'C'
+): ActivityRecommendation {
   const hourly = weather.hourly;
   const now = new Date();
   const currentHourTime = now.getTime();
@@ -76,7 +82,7 @@ export function getBestActivityTime(activity: ActivityType, weather: WeatherData
         if (wind > 40) score -= (wind - 40) * 2;
         break;
 
-      case 'Photography':
+      case 'Photography': {
         const diffSunrise = Math.abs(timeVal - sunrise) / 3600000;
         const diffSunset = Math.abs(timeVal - sunset) / 3600000;
         const isGoldenHour = diffSunrise <= 1.5 || diffSunset <= 1.5;
@@ -88,6 +94,7 @@ export function getBestActivityTime(activity: ActivityType, weather: WeatherData
         // Moderate clouds are great, totally clear or totally overcast is less ideal
         if (clouds < 20 || clouds > 80) score -= 20;
         break;
+      }
 
       case 'Stargazing':
         if (isDay) {
@@ -122,15 +129,15 @@ export function getBestActivityTime(activity: ActivityType, weather: WeatherData
     } else {
       switch (activity) {
         case 'Walk':
-          if (bestPrecip === 0 && bestWind < 15 && bestTemp > 10 && bestTemp < 28) reason = `Perfect conditions: ${Math.round(bestTemp)}° and clear.`;
-          else reason = `Most comfortable window: ${Math.round(bestTemp)}° and ${Math.round(bestWind)} km/h wind.`;
+          if (bestPrecip === 0 && bestWind < 15 && bestTemp > 10 && bestTemp < 28) reason = `Perfect conditions: ${formatTemperatureCompact(bestTemp, unit)} and clear.`;
+          else reason = `Most comfortable window: ${formatTemperatureCompact(bestTemp, unit)} and ${formatWindSpeed(bestWind, unit)} wind.`;
           break;
         case 'Run':
-          reason = `Optimal running conditions: cooler at ${Math.round(bestTemp)}°.`;
+          reason = `Optimal running conditions: cooler at ${formatTemperatureCompact(bestTemp, unit)}.`;
           break;
         case 'Bike':
-          if (bestWind < 15) reason = `Low winds (${Math.round(bestWind)} km/h) make this the smoothest ride.`;
-          else reason = `Best available window, but expect ${Math.round(bestWind)} km/h winds.`;
+          if (bestWind < 15) reason = `Low winds (${formatWindSpeed(bestWind, unit)}) make this the smoothest ride.`;
+          else reason = `Best available window, but expect ${formatWindSpeed(bestWind, unit)} winds.`;
           break;
         case 'Drive':
           if (bestPrecip === 0) reason = `Clear roads and low precipitation risk.`;
