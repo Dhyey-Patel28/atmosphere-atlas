@@ -8,6 +8,7 @@ import { WeatherAdviceCard } from './WeatherAdviceCard';
 import { TimelineStory } from './TimelineStory';
 import { ActivityPlanner } from './ActivityPlanner';
 import { AirQualityCard } from './AirQualityCard';
+import { DailyForecastCard } from './DailyForecastCard';
 import type { TemperatureUnit } from '../lib/units';
 import { formatTemperature, formatTemperatureCompact, formatWindSpeed, formatPrecipitation } from '../lib/units';
 
@@ -364,6 +365,10 @@ export function WeatherPanel({
 
               <Section title="12-Hour Story" defaultOpen={false}>
                 <TimelineStory events={generateTimeline(weather, unit)} />
+              </Section>
+
+              <Section title="5-Day Outlook" defaultOpen={false}>
+                <DailyForecastCard weather={weather} unit={unit} />
               </Section>
 
               <Section title="Activity Planner" defaultOpen={false}>

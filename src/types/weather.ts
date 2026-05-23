@@ -22,6 +22,7 @@ export interface CurrentWeather {
 
 export interface DailyWeather {
   time: string[];
+  weather_code?: number[];
   temperature_2m_max: number[];
   temperature_2m_min: number[];
   sunrise: string[];
