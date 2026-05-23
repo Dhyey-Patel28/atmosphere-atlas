@@ -232,8 +232,8 @@ export function GlobeView({
           ref={globeEl}
           width={dimensions.width}
           height={dimensions.height}
-          globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-          bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+          globeImageUrl="/globe/earth-blue-marble.jpg"
+          bumpImageUrl="/globe/earth-topology.png"
           backgroundColor="rgba(0,0,0,0)"
           htmlElementsData={markerData}
           htmlElement={(data: object) => {
