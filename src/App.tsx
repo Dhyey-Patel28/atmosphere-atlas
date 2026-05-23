@@ -7,6 +7,7 @@ import type { Location, WeatherData, AirQualityData } from './types/weather';
 import { getStoredTemperatureUnit, persistTemperatureUnit, toggleTemperatureUnit } from './lib/units';
 import type { TemperatureUnit } from './lib/units';
 import { getWeatherAmbience } from './lib/ambience';
+import { loadLastSelectedLocation, persistLastSelectedLocation } from './lib/locationMemory';
 
 const GlobeView = lazy(() =>
   import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
@@ -236,6 +237,7 @@ function App() {
     const shouldUpdateUrl = options.updateUrl ?? true;
 
     setSelectedLocation({ ...location });
+    persistLastSelectedLocation(location);
 
     setWeather(null);
     setWeatherError(null);
@@ -406,14 +408,22 @@ function App() {
 
   useEffect(() => {
     const sharedLocation = parseSharedLocationFromUrl();
+    const rememberedLocation = sharedLocation ? null : loadLastSelectedLocation();
 
-    if (!sharedLocation) return;
+    if (!sharedLocation && !rememberedLocation) return;
 
     const timeoutId = window.setTimeout(() => {
-      handleSelectLocation(sharedLocation);
+      if (sharedLocation) {
+        handleSelectLocation(sharedLocation);
 
-      // Normalize older verbose or ?at= URLs to the clean ?loc= format.
-      syncUrlToLocation(sharedLocation);
+        // Normalize older verbose or ?at= URLs to the clean ?loc= format.
+        syncUrlToLocation(sharedLocation);
+        return;
+      }
+
+      if (rememberedLocation) {
+        handleSelectLocation(rememberedLocation, { updateUrl: false });
+      }
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
