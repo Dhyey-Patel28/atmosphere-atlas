@@ -7,3 +7,33 @@
     @apply m-0 p-0 w-full h-full bg-slate-950 text-slate-100 antialiased;
   }
 }
+
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid rgb(34 211 238 / 0.9);
+    outline-offset: 3px;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  a:focus-visible {
+    box-shadow: 0 0 0 4px rgb(34 211 238 / 0.14);
+  }
+
+  ::selection {
+    background: rgb(34 211 238 / 0.32);
+    color: white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}

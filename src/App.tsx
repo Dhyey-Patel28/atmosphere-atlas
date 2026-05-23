@@ -290,7 +290,9 @@ function App() {
               type="button"
               onClick={handleToggleTemperatureUnit}
               className="shrink-0 rounded-full border border-white/15 bg-slate-950/50 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/70 backdrop-blur-md transition-all hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100"
-              aria-label={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+              aria-label={`Switch temperature unit to ${
+                temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'
+              }`}
               title={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
             >
               °{temperatureUnit}
@@ -322,6 +324,9 @@ function App() {
               <button
                 type="button"
                 onClick={() => setIsPinMode((prev) => !prev)}
+                aria-pressed={isPinMode}
+                aria-label={isPinMode ? 'Cancel drop pin mode' : 'Enter drop pin mode'}
+                title={isPinMode ? 'Cancel drop pin mode' : 'Drop a weather pin on the globe'}
                 className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
                   isPinMode
                     ? 'border-cyan-300/70 bg-cyan-400/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.25)]'
@@ -335,6 +340,8 @@ function App() {
                 <button
                   type="button"
                   onClick={handleShareLocation}
+                  aria-label="Copy share link for current location"
+                  title="Copy share link"
                   className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
                     shareStatus === 'copied'
                       ? 'border-emerald-300/60 bg-emerald-400/15 text-emerald-100'
@@ -343,11 +350,13 @@ function App() {
                         : 'border-white/15 bg-slate-950/60 text-white/70 hover:border-cyan-400/50 hover:text-cyan-100'
                   }`}
                 >
-                  {shareStatus === 'copied'
-                    ? 'Copied'
-                    : shareStatus === 'failed'
-                      ? 'Copy failed'
-                      : 'Share'}
+                  <span aria-live="polite">
+                    {shareStatus === 'copied'
+                      ? 'Copied'
+                      : shareStatus === 'failed'
+                        ? 'Copy failed'
+                        : 'Share'}
+                  </span>
                 </button>
               )}
             </div>
