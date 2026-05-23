@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { WeatherPanel } from './components/WeatherPanel';
 import { SavedPlaces, loadSavedPlaces, persistSavedPlaces } from './components/SavedPlaces';
@@ -11,6 +11,12 @@ import { getWeatherAmbience } from './lib/ambience';
 const GlobeView = lazy(() =>
   import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
 );
+
+type ShareToast = {
+  type: 'success' | 'error';
+  title: string;
+  detail: string;
+};
 
 function formatCoordinate(value: number): string {
   return value.toFixed(4).replace(/\.?0+$/, '');
@@ -112,6 +118,8 @@ function App() {
   const [savedPlaces, setSavedPlaces] = useState<Location[]>(() => loadSavedPlaces());
   const [isPinMode, setIsPinMode] = useState(false);
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [shareToast, setShareToast] = useState<ShareToast | null>(null);
+  const shareResetTimer = useRef<number | null>(null);
   const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>(() =>
     getStoredTemperatureUnit()
   );
@@ -125,6 +133,26 @@ function App() {
   useEffect(() => {
     persistTemperatureUnit(temperatureUnit);
   }, [temperatureUnit]);
+
+  useEffect(() => {
+    return () => {
+      if (shareResetTimer.current !== null) {
+        window.clearTimeout(shareResetTimer.current);
+      }
+    };
+  }, []);
+
+  function scheduleShareFeedbackReset(delayMs: number) {
+    if (shareResetTimer.current !== null) {
+      window.clearTimeout(shareResetTimer.current);
+    }
+
+    shareResetTimer.current = window.setTimeout(() => {
+      setShareStatus('idle');
+      setShareToast(null);
+      shareResetTimer.current = null;
+    }, delayMs);
+  }
 
   function handleToggleTemperatureUnit() {
     setTemperatureUnit((currentUnit: TemperatureUnit) => toggleTemperatureUnit(currentUnit));
@@ -144,6 +172,7 @@ function App() {
     setIsAqLoading(true);
 
     setShareStatus('idle');
+    setShareToast(null);
 
     if (shouldUpdateUrl) {
       syncUrlToLocation(location);
@@ -189,16 +218,20 @@ function App() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setShareStatus('copied');
-
-      window.setTimeout(() => {
-        setShareStatus('idle');
-      }, 1800);
+      setShareToast({
+        type: 'success',
+        title: 'Share link copied',
+        detail: 'Paste it anywhere to reopen this exact weather view.',
+      });
+      scheduleShareFeedbackReset(2600);
     } catch {
       setShareStatus('failed');
-
-      window.setTimeout(() => {
-        setShareStatus('idle');
-      }, 2200);
+      setShareToast({
+        type: 'error',
+        title: 'Copy failed',
+        detail: 'Your browser blocked clipboard access. Copy the address from the URL bar instead.',
+      });
+      scheduleShareFeedbackReset(3600);
     }
   }
 
@@ -411,6 +444,28 @@ function App() {
           </div>
         </div>
       </main>
+
+      {shareToast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none fixed bottom-5 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/90 px-4 py-3 text-sm text-white shadow-[0_20px_70px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${
+                shareToast.type === 'success'
+                  ? 'bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.75)]'
+                  : 'bg-rose-300 shadow-[0_0_18px_rgba(253,164,175,0.75)]'
+              }`}
+            />
+            <div className="min-w-0">
+              <p className="font-semibold tracking-wide text-white/90">{shareToast.title}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-white/55">{shareToast.detail}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
