@@ -151,7 +151,7 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
       globe.pointOfView(
         {
           ...DEFAULT_VIEW,
-          altitude: isPinMode ? 2.15 : DEFAULT_VIEW.altitude,
+          altitude: isPinMode ? 2.0 : DEFAULT_VIEW.altitude,
         },
         attempt === 0 ? 1500 : 900
       );

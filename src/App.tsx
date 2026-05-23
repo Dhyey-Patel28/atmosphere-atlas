@@ -163,8 +163,17 @@ function App() {
   function handleFocusSearch() {
     const input = document.getElementById('location-search-input') as HTMLInputElement | null;
 
-    input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    window.setTimeout(() => input?.focus(), 180);
+    if (!input) return;
+
+    input.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+
+    window.setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 180);
   }
 
   function handleStartPinMode() {
@@ -469,21 +478,21 @@ function App() {
         </div>
       </header>
 
-      <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-4 flex flex-col overflow-y-auto xl:overflow-hidden">
-        <div className="flex-1 flex flex-col xl:flex-row gap-4 xl:gap-6 min-h-0 h-full">
+      <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1800px] mx-auto px-3 md:px-6 lg:px-8 py-3 md:py-4 flex flex-col overflow-y-auto xl:overflow-hidden">
+        <div className="flex-1 flex flex-col xl:flex-row gap-3 md:gap-4 xl:gap-6 min-h-0 h-full">
           <div
-            className="relative flex-none xl:flex-1 flex flex-col rounded-[2rem] overflow-hidden bg-slate-900/10 border border-white/5 shadow-2xl backdrop-blur-sm
-                       h-[45vw] max-h-[300px]
+            className="relative flex-none xl:flex-1 flex flex-col rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-slate-900/10 border border-white/5 shadow-2xl backdrop-blur-sm
+                       h-[310px] sm:h-[360px]
                        xl:h-full xl:max-h-none xl:min-h-0"
           >
-            <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
+            <div className="absolute left-3 top-3 md:left-4 md:top-4 z-20 flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleTogglePinMode}
                 aria-pressed={isPinMode}
                 aria-label={isPinMode ? 'Cancel drop pin mode' : 'Enter drop pin mode'}
                 title={isPinMode ? 'Cancel drop pin mode' : 'Drop a weather pin on the globe'}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
+                className={`rounded-full border px-2.5 md:px-3 py-1.5 text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
                   isPinMode
                     ? 'border-cyan-300/70 bg-cyan-400/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.25)]'
                     : 'border-white/15 bg-slate-950/60 text-white/70 hover:border-cyan-400/50 hover:text-cyan-100'
@@ -498,7 +507,7 @@ function App() {
                   onClick={handleShareLocation}
                   aria-label="Copy share link for current location"
                   title="Copy share link"
-                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
+                  className={`rounded-full border px-2.5 md:px-3 py-1.5 text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-md transition-all ${
                     shareStatus === 'copied'
                       ? 'border-emerald-300/60 bg-emerald-400/15 text-emerald-100'
                       : shareStatus === 'failed'
@@ -518,8 +527,8 @@ function App() {
             </div>
 
             {isPinMode && (
-              <div className="absolute bottom-4 left-4 right-4 z-20 rounded-2xl border border-cyan-400/20 bg-slate-950/80 px-4 py-3 text-xs text-cyan-100 shadow-2xl backdrop-blur-xl">
-                Click the globe to drop a weather pin. On mobile, cancel pin mode to resume normal scrolling.
+              <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 z-20 rounded-2xl border border-cyan-400/20 bg-slate-950/80 px-3 md:px-4 py-2.5 md:py-3 text-[11px] md:text-xs text-cyan-100 shadow-2xl backdrop-blur-xl">
+                Tap the globe to place a weather pin. Cancel pin mode to scroll normally.
               </div>
             )}
 
@@ -541,7 +550,7 @@ function App() {
             </Suspense>
 
             {!selectedLocation && !isPinMode && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none px-4">
+              <div className="absolute inset-0 z-10 hidden md:flex items-center justify-center pointer-events-none px-4">
                 <div className="pointer-events-auto w-full max-w-md rounded-[1.75rem] border border-white/10 bg-slate-950/55 px-5 py-5 text-center shadow-2xl backdrop-blur-xl">
                   <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-cyan-300/80">
                     Start with a place
