@@ -22,6 +22,33 @@ export function persistSavedPlaces(places: Location[]): void {
   }
 }
 
+function formatCoordinate(value: number): string {
+  return value.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function getPlaceLabel(place: Location): string {
+  if (place.name === 'Pinned location') return 'Pinned spot';
+  if (place.name === 'Shared location') return 'Shared spot';
+  if (place.name === 'Current location') return 'Near me';
+
+  return place.name;
+}
+
+function getPlaceDetail(place: Location): string {
+  if (place.isPinned || place.name === 'Pinned spot' || place.name === 'Shared spot' || place.name === 'Near me') {
+    return `${formatCoordinate(place.latitude)}, ${formatCoordinate(place.longitude)}`;
+  }
+
+  return place.admin1 || place.country;
+}
+
+function getSaveButtonLabel(location: Location): string {
+  if (location.name === 'Pinned location' || location.name === 'Shared location') return 'Save pin';
+  if (location.name === 'Current location') return 'Save near me';
+
+  return 'Save';
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 interface SavedPlacesProps {
   places: Location[];
@@ -50,7 +77,7 @@ export function SavedPlaces({
         <button
           type="button"
           onClick={onSave}
-          title="Save this place"
+          title={getSaveButtonLabel(selectedLocation)}
           className="
             shrink-0 flex items-center gap-1.5
             bg-cyan-500/15 hover:bg-cyan-500/30
@@ -70,7 +97,7 @@ export function SavedPlaces({
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Save
+          {getSaveButtonLabel(selectedLocation)}
         </button>
       )}
 
@@ -99,10 +126,11 @@ export function SavedPlaces({
                 <button
                   type="button"
                   onClick={() => onSelect(place)}
-                  className="whitespace-nowrap focus:outline-none"
+                  className="flex items-center gap-1.5 whitespace-nowrap focus:outline-none"
+                  title={`${getPlaceLabel(place)} — ${getPlaceDetail(place)}`}
                 >
-                  {place.name}
-                  {place.admin1 ? `, ${place.admin1}` : ''}
+                  <span>{getPlaceLabel(place)}</span>
+                  <span className="hidden sm:inline text-white/35">{getPlaceDetail(place)}</span>
                 </button>
 
                 <button

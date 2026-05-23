@@ -30,6 +30,33 @@ function buildCoordinateLabel(latitude: number, longitude: number): string {
   return `${formatCoordinate(latitude)}°, ${formatCoordinate(longitude)}°`;
 }
 
+function getFriendlyLocationName(location: Location): string {
+  if (location.name === 'Pinned location') return 'Pinned spot';
+  if (location.name === 'Shared location') return 'Shared spot';
+  if (location.name === 'Current location') return 'Near me';
+
+  return location.name;
+}
+
+function getSavedLocationCopy(location: Location): Location {
+  const isCoordinateLocation =
+    location.isPinned ||
+    location.name === 'Pinned location' ||
+    location.name === 'Shared location' ||
+    location.name === 'Current location';
+
+  if (!isCoordinateLocation) {
+    return location;
+  }
+
+  return {
+    ...location,
+    name: getFriendlyLocationName(location),
+    admin1: buildCoordinateLabel(location.latitude, location.longitude),
+    country: 'Saved coordinates',
+  };
+}
+
 function parseLocationParam(rawValue: string | null): Location | null {
   if (!rawValue) return null;
 
@@ -229,9 +256,39 @@ function App() {
   function handleSave() {
     if (!selectedLocation) return;
 
+    const savedLocation = getSavedLocationCopy(selectedLocation);
+
     setSavedPlaces((prev) => {
-      if (prev.some((place) => place.id === selectedLocation.id)) return prev;
-      return [...prev, selectedLocation].slice(0, 10);
+      if (prev.some((place) => place.id === selectedLocation.id)) {
+        setAppToast({
+          type: 'success',
+          title: 'Already saved',
+          detail: `${getFriendlyLocationName(selectedLocation)} is already in your saved places.`,
+        });
+        scheduleToastReset(2200);
+
+        return prev;
+      }
+
+      if (prev.length >= 10) {
+        setAppToast({
+          type: 'error',
+          title: 'Saved places are full',
+          detail: 'Remove a saved place before adding another one.',
+        });
+        scheduleToastReset(3200);
+
+        return prev;
+      }
+
+      setAppToast({
+        type: 'success',
+        title: 'Place saved',
+        detail: `${getFriendlyLocationName(selectedLocation)} was added to your saved places.`,
+      });
+      scheduleToastReset(2400);
+
+      return [savedLocation, ...prev];
     });
   }
 
