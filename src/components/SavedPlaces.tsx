@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import type { Location } from '../types/weather';
 
 const STORAGE_KEY = 'atmosphere-atlas-saved-places';
-const MAX_VISIBLE_PLACES = 5;
+
+const PHONE_VISIBLE_PLACES = 2;
+const TABLET_VISIBLE_PLACES = 3;
+const DESKTOP_VISIBLE_PLACES = 5;
 
 // ── Persistence helpers ──
 export function loadSavedPlaces(): Location[] {
@@ -56,8 +59,26 @@ function getSaveButtonLabel(location: Location): string {
   return 'Save';
 }
 
-function getVisiblePlaces(places: Location[], selectedLocation: Location | null): Location[] {
-  const base = places.slice(0, MAX_VISIBLE_PLACES);
+function getVisibleLimit(): number {
+  if (typeof window === 'undefined') return DESKTOP_VISIBLE_PLACES;
+
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    return DESKTOP_VISIBLE_PLACES;
+  }
+
+  if (window.matchMedia('(min-width: 640px)').matches) {
+    return TABLET_VISIBLE_PLACES;
+  }
+
+  return PHONE_VISIBLE_PLACES;
+}
+
+function getVisiblePlaces(
+  places: Location[],
+  selectedLocation: Location | null,
+  visibleLimit: number
+): Location[] {
+  const base = places.slice(0, visibleLimit);
 
   if (!selectedLocation) return base;
 
@@ -68,8 +89,34 @@ function getVisiblePlaces(places: Location[], selectedLocation: Location | null)
 
   return [activeSavedPlace, ...base.filter((place) => place.id !== activeSavedPlace.id)].slice(
     0,
-    MAX_VISIBLE_PLACES
+    visibleLimit
   );
+}
+
+function useVisiblePlaceLimit(): number {
+  const [visibleLimit, setVisibleLimit] = useState(getVisibleLimit);
+
+  useEffect(() => {
+    const phoneQuery = window.matchMedia('(max-width: 639px)');
+    const tabletQuery = window.matchMedia('(min-width: 640px) and (max-width: 1023px)');
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+
+    function handleChange() {
+      setVisibleLimit(getVisibleLimit());
+    }
+
+    phoneQuery.addEventListener('change', handleChange);
+    tabletQuery.addEventListener('change', handleChange);
+    desktopQuery.addEventListener('change', handleChange);
+
+    return () => {
+      phoneQuery.removeEventListener('change', handleChange);
+      tabletQuery.removeEventListener('change', handleChange);
+      desktopQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
+
+  return visibleLimit;
 }
 
 // ── Component ──
@@ -90,12 +137,13 @@ export function SavedPlaces({
 }: SavedPlacesProps) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const visibleLimit = useVisiblePlaceLimit();
 
   const alreadySaved = selectedLocation
     ? places.some((place) => place.id === selectedLocation.id)
     : false;
 
-  const visiblePlaces = getVisiblePlaces(places, selectedLocation);
+  const visiblePlaces = getVisiblePlaces(places, selectedLocation, visibleLimit);
   const hiddenCount = Math.max(0, places.length - visiblePlaces.length);
 
   useEffect(() => {
@@ -261,8 +309,12 @@ export function SavedPlaces({
                         }}
                         className="min-w-0 flex-1 text-left"
                       >
-                        <p className="truncate text-sm font-bold text-white/85">{getPlaceLabel(place)}</p>
-                        <p className="mt-0.5 truncate text-xs text-white/35">{getPlaceDetail(place)}</p>
+                        <p className="truncate text-sm font-bold text-white/85">
+                          {getPlaceLabel(place)}
+                        </p>
+                        <p className="mt-0.5 truncate text-xs text-white/35">
+                          {getPlaceDetail(place)}
+                        </p>
                       </button>
 
                       <button
