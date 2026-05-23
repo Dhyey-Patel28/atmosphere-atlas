@@ -148,7 +148,13 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
         return;
       }
 
-      globe.pointOfView(DEFAULT_VIEW, attempt === 0 ? 1500 : 900);
+      globe.pointOfView(
+        {
+          ...DEFAULT_VIEW,
+          altitude: isPinMode ? 2.15 : DEFAULT_VIEW.altitude,
+        },
+        attempt === 0 ? 1500 : 900
+      );
     }
 
     if (dimensions.width > 0 && dimensions.height > 0) {
@@ -160,7 +166,7 @@ export function GlobeView({ location, isPinMode = false, onPinLocation }: GlobeV
       cancelled = true;
       timeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
     };
-  }, [location, dimensions.width, dimensions.height]);
+  }, [location, isPinMode, dimensions.width, dimensions.height]);
 
   const locationMarker: MarkerData | null = location
     ? {

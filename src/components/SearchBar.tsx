@@ -296,6 +296,7 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
           </button>
 
           <input
+            id="location-search-input"
             ref={inputRef}
             type="text"
             placeholder="Search city…"
@@ -304,7 +305,7 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
             onFocus={handleFocus}
             autoComplete="off"
             spellCheck={false}
-            className="bg-transparent border-none outline-none text-white w-full placeholder:text-white/40 text-sm md:text-base min-w-0"
+            className="bg-transparent border-none outline-none focus-visible:outline-none focus-visible:ring-0 text-white w-full placeholder:text-white/40 text-sm md:text-base min-w-0 scroll-mt-28"
           />
 
           {query && (

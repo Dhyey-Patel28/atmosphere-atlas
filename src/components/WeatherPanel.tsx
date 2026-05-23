@@ -58,6 +58,10 @@ interface WeatherPanelProps {
   isAqLoading: boolean;
   aqError: string | null;
   unit: TemperatureUnit;
+  onFocusSearch?: () => void;
+  onUseCurrentLocation?: () => void;
+  onStartPinMode?: () => void;
+  isPinMode?: boolean;
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -70,16 +74,70 @@ export function WeatherPanel({
   isAqLoading,
   aqError,
   unit,
+  onFocusSearch,
+  onUseCurrentLocation,
+  onStartPinMode,
+  isPinMode = false,
 }: WeatherPanelProps) {
 
   // ── Empty placeholder ──────────────────────────────────────────────────────
   if (!location && !isLoading && !error) {
     return (
       <aside className="w-full xl:h-full">
-        <div className="w-full h-full min-h-[120px] bg-slate-900/20 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-6 shadow-2xl opacity-30 flex flex-col gap-4">
-          <div className="h-4 w-1/3 bg-white/10 rounded-full" />
-          <div className="flex-1 bg-white/5 rounded-2xl border border-white/5" />
-          <div className="h-24 bg-white/5 rounded-2xl border border-white/5" />
+        <div className="w-full bg-slate-950/35 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-5 shadow-2xl flex flex-col gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-cyan-300/70">
+              Weather intelligence
+            </p>
+            <h2 className="mt-2 text-xl font-black tracking-tight text-white/90">
+              {isPinMode ? 'Pin mode is active.' : 'Pick a place. We’ll explain the day.'}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/50">
+              {isPinMode
+                ? 'Click anywhere on the globe to load weather for that exact point.'
+                : 'Start with search, your current location, or a pin on the globe.'}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={onFocusSearch}
+              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left transition-all hover:border-cyan-300/35 hover:bg-cyan-400/10"
+            >
+              <span>
+                <span className="block text-sm font-bold text-white/85">Search</span>
+                <span className="mt-0.5 block text-xs text-white/40">Find a named city or place.</span>
+              </span>
+              <span className="text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-cyan-200">→</span>
+            </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={onUseCurrentLocation}
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left transition-all hover:border-cyan-300/25 hover:bg-cyan-400/10"
+              >
+                <span className="block text-xs font-bold text-white/80">Near me</span>
+                <span className="mt-1 block text-[11px] leading-relaxed text-white/40">Use browser location.</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onStartPinMode}
+                className={`rounded-2xl border p-3 text-left transition-all ${
+                  isPinMode
+                    ? 'border-cyan-300/45 bg-cyan-400/12 text-cyan-100'
+                    : 'border-white/10 bg-white/[0.04] hover:border-cyan-300/25 hover:bg-cyan-400/10'
+                }`}
+              >
+                <span className="block text-xs font-bold text-white/80">Drop pin</span>
+                <span className="mt-1 block text-[11px] leading-relaxed text-white/40">
+                  {isPinMode ? 'Now click the globe.' : 'Choose any point.'}
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
     );

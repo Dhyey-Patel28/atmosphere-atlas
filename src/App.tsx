@@ -160,6 +160,42 @@ function App() {
     setTemperatureUnit((currentUnit: TemperatureUnit) => toggleTemperatureUnit(currentUnit));
   }
 
+  function handleFocusSearch() {
+    const input = document.getElementById('location-search-input') as HTMLInputElement | null;
+
+    input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => input?.focus(), 180);
+  }
+
+  function handleStartPinMode() {
+    setIsPinMode(true);
+    setAppToast({
+      type: 'success',
+      title: 'Pin mode active',
+      detail: 'Click anywhere on the globe to load weather for that point.',
+    });
+    scheduleToastReset(3200);
+  }
+
+  function handleTogglePinMode() {
+    setIsPinMode((current) => {
+      const next = !current;
+
+      if (next) {
+        setAppToast({
+          type: 'success',
+          title: 'Pin mode active',
+          detail: 'Click anywhere on the globe to load weather for that point.',
+        });
+        scheduleToastReset(3200);
+      } else {
+        setAppToast(null);
+      }
+
+      return next;
+    });
+  }
+
   function handleSelectLocation(location: Location, options: { updateUrl?: boolean } = {}) {
     const shouldUpdateUrl = options.updateUrl ?? true;
 
@@ -255,14 +291,19 @@ function App() {
         });
         scheduleToastReset(2800);
       },
-      () => {
+      (geoError) => {
         setGeoStatus('failed');
+
+        const denied = geoError.code === geoError.PERMISSION_DENIED;
+
         setAppToast({
           type: 'error',
-          title: 'Location permission blocked',
-          detail: 'Search a city or drop a pin instead.',
+          title: denied ? 'Location access is blocked' : 'Could not find your location',
+          detail: denied
+            ? 'Use the lock icon in the address bar to allow location access, or search/drop a pin instead.'
+            : 'Search a city or drop a pin instead.',
         });
-        scheduleToastReset(4200);
+        scheduleToastReset(5200);
       },
       {
         enableHighAccuracy: false,
@@ -438,7 +479,7 @@ function App() {
             <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setIsPinMode((prev) => !prev)}
+                onClick={handleTogglePinMode}
                 aria-pressed={isPinMode}
                 aria-label={isPinMode ? 'Cancel drop pin mode' : 'Enter drop pin mode'}
                 title={isPinMode ? 'Cancel drop pin mode' : 'Drop a weather pin on the globe'}
@@ -499,15 +540,43 @@ function App() {
               />
             </Suspense>
 
-            {!selectedLocation && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                <p
-                  className="text-white/50 text-sm md:text-base tracking-widest font-light
-                             bg-slate-950/60 px-5 py-2.5 rounded-full backdrop-blur-md
-                             border border-white/10 animate-pulse uppercase"
-                >
-                  Search a city to begin
-                </p>
+            {!selectedLocation && !isPinMode && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none px-4">
+                <div className="pointer-events-auto w-full max-w-md rounded-[1.75rem] border border-white/10 bg-slate-950/55 px-5 py-5 text-center shadow-2xl backdrop-blur-xl">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-cyan-300/80">
+                    Start with a place
+                  </p>
+                  <h2 className="mt-2 text-lg md:text-xl font-black tracking-tight text-white/95">
+                    See weather as a living map.
+                  </h2>
+                  <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-white/50">
+                    Search a city, use your location, or choose any point on Earth.
+                  </p>
+
+                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={handleFocusSearch}
+                      className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white/80 transition-all hover:border-cyan-300/45 hover:bg-cyan-400/10 hover:text-cyan-100"
+                    >
+                      Search
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleUseCurrentLocation}
+                      className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white/80 transition-all hover:border-cyan-300/45 hover:bg-cyan-400/10 hover:text-cyan-100"
+                    >
+                      Near me
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleStartPinMode}
+                      className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white/80 transition-all hover:border-cyan-300/45 hover:bg-cyan-400/10 hover:text-cyan-100"
+                    >
+                      Drop pin
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -522,6 +591,10 @@ function App() {
               isAqLoading={isAqLoading}
               aqError={aqError}
               unit={temperatureUnit}
+              onFocusSearch={handleFocusSearch}
+              onUseCurrentLocation={handleUseCurrentLocation}
+              onStartPinMode={handleStartPinMode}
+              isPinMode={isPinMode}
             />
           </div>
         </div>
