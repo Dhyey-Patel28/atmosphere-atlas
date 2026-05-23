@@ -9,8 +9,10 @@ import { TimelineStory } from './TimelineStory';
 import { ActivityPlanner } from './ActivityPlanner';
 import { AirQualityCard } from './AirQualityCard';
 import { DailyForecastCard } from './DailyForecastCard';
+import { WeatherBriefCard } from './WeatherBriefCard';
+import { WeatherDetailsCard } from './WeatherDetailsCard';
 import type { TemperatureUnit } from '../lib/units';
-import { formatTemperature, formatTemperatureCompact, formatWindSpeed, formatPrecipitation } from '../lib/units';
+import { formatTemperatureCompact } from '../lib/units';
 
 // ── Collapsible section wrapper ─────────────────────────────────────────────
 function Section({
@@ -229,135 +231,25 @@ export function WeatherPanel({
               </div>
             </div>
 
-            {/* ── Core metrics 2×2 grid ───────────────────────────────────── */}
-            <div className="grid grid-cols-2 gap-2 pb-4">
-              {[
-                { 
-                  label: 'Humidity', 
-                  value: `${weather.current.relative_humidity_2m}%`, 
-                  icon: (
-                    <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.105-7.5 11.25-7.5 11.25S4.5 17.605 4.5 10.5a7.5 7.5 0 1115 0z" />
-                    </svg>
-                  )
-                },
-                { 
-                  label: 'Wind Speed', 
-                  value: formatWindSpeed(weather.current.wind_speed_10m, unit), 
-                  icon: (
-                    <svg className="w-3.5 h-3.5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5h16.5M3.75 4.5h16.5m-16.5 4.5h16.5m-16.5 9h16.5" />
-                    </svg>
-                  )
-                },
-                {
-                  label: 'High / Low',
-                  value: `${formatTemperatureCompact(weather.daily.temperature_2m_max[0], unit)} / ${formatTemperature(weather.daily.temperature_2m_min[0], unit)}`,
-                  icon: (
-                    <svg className="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m9-5.25L12 16.5m0 0l-4.5-4.5M12 16.5V3" />
-                    </svg>
-                  )
-                },
-                { 
-                  label: 'Precipitation', 
-                  value: formatPrecipitation(weather.current.precipitation, unit), 
-                  icon: (
-                    <svg className="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.02 12.02l.707-.707" />
-                    </svg>
-                  )
-                },
-              ].map(({ label, value, icon }) => (
-                <div key={label} className="bg-white/[0.03] border border-white/5 rounded-2xl p-3.5 flex flex-col gap-1 hover:bg-white/[0.06] hover:border-white/10 transition-all relative overflow-hidden group">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/40 text-[10px] uppercase tracking-wider font-bold">{label}</span>
-                    <span className="opacity-50 group-hover:opacity-100 transition-opacity duration-200">{icon}</span>
-                  </div>
-                  <span className="text-white font-extrabold text-base tracking-tight">{value}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Solar Arc (Sunrise / Sunset) ─────────────────────────────── */}
-            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 flex flex-col gap-3 mb-4 relative overflow-hidden group hover:bg-white/[0.06] hover:border-white/10 transition-all">
-              <div className="flex justify-between items-center text-[10px] uppercase tracking-wider text-white/40 font-bold">
-                <span>Solar Cycle</span>
-                <span className="text-cyan-400/90 font-mono">
-                  {isDay 
-                    ? `${Math.round(currentProgress * 100)}% through daylight` 
-                    : 'Sun below horizon'}
-                </span>
-              </div>
-              
-              <div className="relative h-12 flex items-end justify-between px-1">
-                {/* Sunrise label */}
-                <div className="flex flex-col mb-[-4px]">
-                  <span className="text-white font-semibold text-xs">
-                    {new Date(weather.daily.sunrise[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  <span className="text-[9px] uppercase tracking-wider text-white/30 font-bold">Sunrise</span>
-                </div>
-
-                {/* Solar Arc Graphic */}
-                <div className="absolute inset-x-0 bottom-0 top-0 flex items-center justify-center pointer-events-none">
-                  <svg className="w-full h-full max-w-[200px]" viewBox="0 0 100 32" fill="none">
-                    {/* Background dashed arc */}
-                    <path
-                      d="M 10 26 Q 50 4 90 26"
-                      stroke="rgba(255, 255, 255, 0.08)"
-                      strokeWidth="2"
-                      strokeDasharray="2 2"
-                    />
-                    
-                    {/* Active daytime daylight arc path */}
-                    {isDay && (
-                      <path
-                        d="M 10 26 Q 50 4 90 26"
-                        stroke="url(#solar-gradient)"
-                        strokeWidth="2"
-                        strokeDasharray="100"
-                        strokeDashoffset={100 - currentProgress * 100}
-                        style={{
-                          transition: 'stroke-dashoffset 0.5s ease'
-                        }}
-                      />
-                    )}
-
-                    <defs>
-                      <linearGradient id="solar-gradient" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
-                        <stop offset="50%" stopColor="#facc15" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#ea580c" stopOpacity="0.4" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Glowing Sun node */}
-                    {isDay && (
-                      <g transform={`translate(${sunX}, ${sunY})`}>
-                        <circle r="3.5" fill="#facc15" />
-                        <circle r="1.5" fill="#fff" />
-                        <circle r="6" fill="#facc15" opacity="0.3" className="animate-ping" style={{ animationDuration: '3s' }} />
-                      </g>
-                    )}
-                  </svg>
-                </div>
-
-                {/* Sunset label */}
-                <div className="flex flex-col mb-[-4px] text-right">
-                  <span className="text-white font-semibold text-xs">
-                    {new Date(weather.daily.sunset[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  <span className="text-[9px] uppercase tracking-wider text-white/30 font-bold">Sunset</span>
-                </div>
-              </div>
-            </div>
+            {/* ── Human-centered daily brief ─────────────────────────────── */}
+            <WeatherBriefCard weather={weather} airQuality={airQuality} unit={unit} />
 
             {/* ── Life Score — always visible ──────────────────────────────── */}
             <LifeScoreCard {...calculateLifeScore(weather.current)} />
 
             {/* ── Collapsible secondary sections ──────────────────────────── */}
             <div className="mt-3 flex flex-col gap-1 border-t border-white/5 pt-2">
+
+              <Section title="Weather Details" defaultOpen={false}>
+                <WeatherDetailsCard
+                  weather={weather}
+                  unit={unit}
+                  isDay={isDay}
+                  currentProgress={currentProgress}
+                  sunX={sunX}
+                  sunY={sunY}
+                />
+              </Section>
 
               <Section title="Weather Translator" defaultOpen={false}>
                 <WeatherAdviceCard advice={getWeatherAdvice(weather.current)} />
