@@ -363,53 +363,58 @@ function App() {
       />
       <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_30%)]" />
 
-      <header className="relative z-50 w-full border-b border-white/5 bg-slate-950/40 backdrop-blur-xl shrink-0">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <img
-              src="/logo-mark-256.png"
-              alt="Atmosphere Atlas Logo"
-              className="w-5 h-5 md:w-6 md:h-6 object-contain"
-            />
-            <h1 className="text-sm md:text-base font-black tracking-[0.25em] text-white/90 uppercase whitespace-nowrap bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-              ATMOSPHERE ATLAS
-            </h1>
+      <header className="relative z-50 w-full border-b border-white/5 bg-slate-950/45 backdrop-blur-xl shrink-0">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 py-3 flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <img
+                src="/logo-mark-256.png"
+                alt="Atmosphere Atlas Logo"
+                className="w-5 h-5 md:w-6 md:h-6 object-contain shrink-0"
+              />
+              <h1 className="text-sm md:text-base font-black tracking-[0.2em] sm:tracking-[0.25em] text-white/90 uppercase whitespace-nowrap bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent truncate">
+                ATMOSPHERE ATLAS
+              </h1>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={handleToggleTemperatureUnit}
+                className="rounded-full border border-white/15 bg-slate-950/50 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/70 backdrop-blur-md transition-all hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100"
+                aria-label={`Switch temperature unit to ${
+                  temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'
+                }`}
+                title={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+              >
+                °{temperatureUnit}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                disabled={geoStatus === 'locating'}
+                className={`rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] backdrop-blur-md transition-all disabled:cursor-wait disabled:opacity-70 ${
+                  geoStatus === 'locating'
+                    ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100'
+                    : 'border-white/15 bg-slate-950/50 text-white/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100'
+                }`}
+                aria-label="Use my current location"
+                title="Use browser location"
+              >
+                <span className="sm:hidden">{geoStatus === 'locating' ? '...' : 'Near'}</span>
+                <span className="hidden sm:inline">{geoStatus === 'locating' ? 'Locating' : 'Near me'}</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 min-w-0">
-            <div className="w-full md:max-w-xs lg:max-w-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-2.5 min-w-0">
+            <div className="w-full lg:max-w-md">
               <SearchBar onLocationSelect={handleSelectLocation} />
             </div>
 
-            <button
-              type="button"
-              onClick={handleToggleTemperatureUnit}
-              className="shrink-0 rounded-full border border-white/15 bg-slate-950/50 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/70 backdrop-blur-md transition-all hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100"
-              aria-label={`Switch temperature unit to ${
-                temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'
-              }`}
-              title={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
-            >
-              °{temperatureUnit}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleUseCurrentLocation}
-              disabled={geoStatus === 'locating'}
-              className={`shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] backdrop-blur-md transition-all disabled:cursor-wait disabled:opacity-70 ${
-                geoStatus === 'locating'
-                  ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100'
-                  : 'border-white/15 bg-slate-950/50 text-white/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100'
-              }`}
-              aria-label="Use my current location"
-              title="Use browser location"
-            >
-              {geoStatus === 'locating' ? 'Locating' : 'Near me'}
-            </button>
-
             {(savedPlaces.length > 0 || selectedLocation) && (
-              <div className="flex items-center min-w-0">
+              <div className="flex items-center min-w-0 lg:flex-1 lg:justify-end">
                 <SavedPlaces
                   places={savedPlaces}
                   selectedLocation={selectedLocation}
