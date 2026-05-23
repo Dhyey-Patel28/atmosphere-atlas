@@ -246,10 +246,16 @@ export function GlobeView({
               el.setAttribute('aria-label', `Open saved place: ${marker.name}`);
               el.style.pointerEvents = isPinMode ? 'none' : 'auto';
               el.className =
-                'relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/70 p-1 shadow-[0_0_18px_rgba(148,163,184,0.35)] backdrop-blur-md transition-transform hover:scale-125 hover:border-cyan-200/80 hover:bg-cyan-300/15';
+                'group relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/80';
 
               el.innerHTML = `
-                <span class="block h-2.5 w-2.5 rounded-full bg-white/75 shadow-[0_0_14px_rgba(255,255,255,0.55)]"></span>
+                <span class="absolute h-7 w-7 rounded-full border border-cyan-200/20 bg-cyan-300/5 opacity-0 shadow-[0_0_18px_rgba(34,211,238,0.18)] backdrop-blur-md transition-all duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"></span>
+                <span class="relative flex h-5 w-5 items-center justify-center rounded-full border border-cyan-100/35 bg-slate-950/75 shadow-[0_0_14px_rgba(34,211,238,0.18)] backdrop-blur-md">
+                  <span class="h-2 w-2 rounded-full bg-cyan-100/70 shadow-[0_0_10px_rgba(165,243,252,0.55)]"></span>
+                </span>
+                <span class="pointer-events-none absolute left-1/2 top-7 hidden -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/75 shadow-2xl backdrop-blur-md group-hover:block group-focus-visible:block">
+                  ${marker.name}
+                </span>
               `;
 
               const selectSavedPlace = (event: Event) => {
