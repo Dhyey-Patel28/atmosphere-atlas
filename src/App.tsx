@@ -12,7 +12,7 @@ const GlobeView = lazy(() =>
   import('./components/GlobeView').then((m) => ({ default: m.GlobeView }))
 );
 
-type ShareToast = {
+type AppToast = {
   type: 'success' | 'error';
   title: string;
   detail: string;
@@ -118,8 +118,9 @@ function App() {
   const [savedPlaces, setSavedPlaces] = useState<Location[]>(() => loadSavedPlaces());
   const [isPinMode, setIsPinMode] = useState(false);
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
-  const [shareToast, setShareToast] = useState<ShareToast | null>(null);
-  const shareResetTimer = useRef<number | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'locating' | 'failed'>('idle');
+  const [appToast, setAppToast] = useState<AppToast | null>(null);
+  const toastResetTimer = useRef<number | null>(null);
   const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>(() =>
     getStoredTemperatureUnit()
   );
@@ -136,21 +137,22 @@ function App() {
 
   useEffect(() => {
     return () => {
-      if (shareResetTimer.current !== null) {
-        window.clearTimeout(shareResetTimer.current);
+      if (toastResetTimer.current !== null) {
+        window.clearTimeout(toastResetTimer.current);
       }
     };
   }, []);
 
-  function scheduleShareFeedbackReset(delayMs: number) {
-    if (shareResetTimer.current !== null) {
-      window.clearTimeout(shareResetTimer.current);
+  function scheduleToastReset(delayMs: number) {
+    if (toastResetTimer.current !== null) {
+      window.clearTimeout(toastResetTimer.current);
     }
 
-    shareResetTimer.current = window.setTimeout(() => {
+    toastResetTimer.current = window.setTimeout(() => {
       setShareStatus('idle');
-      setShareToast(null);
-      shareResetTimer.current = null;
+      setGeoStatus('idle');
+      setAppToast(null);
+      toastResetTimer.current = null;
     }, delayMs);
   }
 
@@ -172,7 +174,7 @@ function App() {
     setIsAqLoading(true);
 
     setShareStatus('idle');
-    setShareToast(null);
+    setAppToast(null);
 
     if (shouldUpdateUrl) {
       syncUrlToLocation(location);
@@ -210,6 +212,66 @@ function App() {
     setIsPinMode(false);
   }
 
+  function handleUseCurrentLocation() {
+    if (!('geolocation' in navigator)) {
+      setGeoStatus('failed');
+      setAppToast({
+        type: 'error',
+        title: 'Location unavailable',
+        detail: 'Your browser does not support current-location lookup.',
+      });
+      scheduleToastReset(3600);
+      return;
+    }
+
+    setGeoStatus('locating');
+    setAppToast({
+      type: 'success',
+      title: 'Locating you',
+      detail: 'Allow location access to load nearby weather.',
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = Number(position.coords.latitude.toFixed(4));
+        const longitude = Number(position.coords.longitude.toFixed(4));
+
+        const currentLocation: Location = {
+          id: buildCoordinateId(latitude, longitude),
+          name: 'Current location',
+          latitude,
+          longitude,
+          admin1: 'Browser location',
+          country: buildCoordinateLabel(latitude, longitude),
+          isPinned: true,
+        };
+
+        handleSelectLocation(currentLocation);
+        setGeoStatus('idle');
+        setAppToast({
+          type: 'success',
+          title: 'Current location loaded',
+          detail: 'Weather is now synced to your approximate browser location.',
+        });
+        scheduleToastReset(2800);
+      },
+      () => {
+        setGeoStatus('failed');
+        setAppToast({
+          type: 'error',
+          title: 'Location permission blocked',
+          detail: 'Search a city or drop a pin instead.',
+        });
+        scheduleToastReset(4200);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 10 * 60 * 1000,
+      }
+    );
+  }
+
   async function handleShareLocation() {
     if (!selectedLocation) return;
 
@@ -218,20 +280,20 @@ function App() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setShareStatus('copied');
-      setShareToast({
+      setAppToast({
         type: 'success',
         title: 'Share link copied',
         detail: 'Paste it anywhere to reopen this exact weather view.',
       });
-      scheduleShareFeedbackReset(2600);
+      scheduleToastReset(2600);
     } catch {
       setShareStatus('failed');
-      setShareToast({
+      setAppToast({
         type: 'error',
         title: 'Copy failed',
         detail: 'Your browser blocked clipboard access. Copy the address from the URL bar instead.',
       });
-      scheduleShareFeedbackReset(3600);
+      scheduleToastReset(3600);
     }
   }
 
@@ -329,6 +391,21 @@ function App() {
               title={`Switch to ${temperatureUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
             >
               °{temperatureUnit}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleUseCurrentLocation}
+              disabled={geoStatus === 'locating'}
+              className={`shrink-0 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] backdrop-blur-md transition-all disabled:cursor-wait disabled:opacity-70 ${
+                geoStatus === 'locating'
+                  ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100'
+                  : 'border-white/15 bg-slate-950/50 text-white/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100'
+              }`}
+              aria-label="Use my current location"
+              title="Use browser location"
+            >
+              {geoStatus === 'locating' ? 'Locating' : 'Near me'}
             </button>
 
             {(savedPlaces.length > 0 || selectedLocation) && (
@@ -445,7 +522,7 @@ function App() {
         </div>
       </main>
 
-      {shareToast && (
+      {appToast && (
         <div
           role="status"
           aria-live="polite"
@@ -454,14 +531,14 @@ function App() {
           <div className="flex items-start gap-3">
             <div
               className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${
-                shareToast.type === 'success'
+                appToast.type === 'success'
                   ? 'bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.75)]'
                   : 'bg-rose-300 shadow-[0_0_18px_rgba(253,164,175,0.75)]'
               }`}
             />
             <div className="min-w-0">
-              <p className="font-semibold tracking-wide text-white/90">{shareToast.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-white/55">{shareToast.detail}</p>
+              <p className="font-semibold tracking-wide text-white/90">{appToast.title}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-white/55">{appToast.detail}</p>
             </div>
           </div>
         </div>
